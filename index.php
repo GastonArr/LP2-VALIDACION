@@ -3,32 +3,46 @@ session_start();
 
 require_once 'funciones/conexion.php';
 require_once 'funciones/funciones.php';
-RequiereSesion();
 
-// El layout necesita saber el título y la opción activa del sidebar.
+if (empty($_SESSION['Usuario_ID'])) {
+    header('Location: login.php');
+    exit;
+}
+
 $pageTitle = 'Panel de Administración';
 $activePage = 'dashboard';
-// Se obtiene el array asociativo con los datos del usuario guardados en la sesión.
-$user = ObtenerUsuarioEnSesion();
-// Helper que arma "Nombre Apellido" a partir de los campos básicos.
-$userFullName = NombreCompletoUsuario($user);
-// Inicializamos el nivel en null por si el usuario no tiene datos completos.
-$userNivel = null;
-if (isset($user['id_nivel'])) {
-    // Si está definido el nivel se lo asignamos para reutilizarlo más adelante.
-    $userNivel = $user['id_nivel'];
-}
-// Texto con la denominación humana del nivel (Administrador, Chofer, etc.).
-$userDenominacion = DenominacionNivel($userNivel);
-// Lista de funcionalidades que el usuario puede realizar según su nivel.
-$funcionesPermitidas = DescripcionFuncionesNivel($userNivel);
 
-// Layout base reutilizable en todo el panel.
+$apellidoUsuario = !empty($_SESSION['Usuario_Apellido']) ? $_SESSION['Usuario_Apellido'] : '';
+$nombreUsuario = !empty($_SESSION['Usuario_Nombre']) ? $_SESSION['Usuario_Nombre'] : '';
+
+$nombreCompleto = trim($apellidoUsuario . ', ' . $nombreUsuario);
+if ($apellidoUsuario === '' || $nombreUsuario === '') {
+    $nombreCompleto = trim($apellidoUsuario . ' ' . $nombreUsuario);
+}
+if ($nombreCompleto === '') {
+    $nombreCompleto = 'Usuario';
+}
+
+$nivelActual = !empty($_SESSION['Usuario_Nivel']) ? (int) $_SESSION['Usuario_Nivel'] : 0;
+$denominacionNivel = !empty($_SESSION['Usuario_NombreNivel']) ? $_SESSION['Usuario_NombreNivel'] : 'Usuario';
+
+$funcionesPermitidas = 'la información disponible en el panel';
+switch ($nivelActual) {
+    case 1:
+        $funcionesPermitidas = 'transportes, choferes y viajes';
+        break;
+    case 2:
+        $funcionesPermitidas = 'transportes y viajes';
+        break;
+    case 3:
+        $funcionesPermitidas = 'el seguimiento de los viajes asignados';
+        break;
+}
+
 require_once 'includes/header.php';
 require_once 'includes/topbar.php';
 require_once 'includes/sidebar.php';
 ?>
-<!-- Contenido central del dashboard -->
 <main id="main" class="main">
     <div class="pagetitle">
         <h1>Bienvenido</h1>
@@ -44,8 +58,7 @@ require_once 'includes/sidebar.php';
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <!-- Mensaje personalizado para el usuario logueado -->
-                        <h5 class="card-title">Hola, <?php echo htmlspecialchars($userFullName); ?> (<?php echo htmlspecialchars($userDenominacion); ?>)!</h5>
+                        <h5 class="card-title">Hola, <?php echo htmlspecialchars($nombreCompleto); ?> (<?php echo htmlspecialchars($denominacionNivel); ?>)!</h5>
                         <p class="card-text">Desde este panel podrás gestionar la operación diaria del sistema. Según tu función, podrás gestionar: <?php echo htmlspecialchars($funcionesPermitidas); ?>.</p>
                     </div>
                 </div>
@@ -54,6 +67,5 @@ require_once 'includes/sidebar.php';
     </section>
 </main>
 <?php
-// Footer reutilizable que incluye scripts comunes y cierra el documento HTML.
 require_once 'includes/footer.php';
 ?>

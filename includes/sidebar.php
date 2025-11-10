@@ -1,24 +1,14 @@
 <?php
-/**
- * Menú lateral del panel.
- * Según el rol del usuario se muestran diferentes secciones.
- */
-
-// Página actual (se usa para marcar los enlaces activos).
 $currentPage = '';
 if (isset($activePage)) {
     $currentPage = $activePage;
 }
-// Se consulta el rol para decidir qué opciones habilitar.
-$esAdminActual = EsAdministrador();
-$esOperadorActual = EsOperador();
 
-// Flags de visibilidad por sección.
-$mostrarTransportes = $esAdminActual || $esOperadorActual;
-$mostrarChoferes = $esAdminActual;
-$mostrarCargaViajes = $esAdminActual || $esOperadorActual;
+$nivelSesion = !empty($_SESSION['Usuario_Nivel']) ? (int) $_SESSION['Usuario_Nivel'] : 0;
+$mostrarTransportes = ($nivelSesion === 1 || $nivelSesion === 2);
+$mostrarChoferes = ($nivelSesion === 1);
+$mostrarCargaViajes = ($nivelSesion === 1 || $nivelSesion === 2);
 
-// Listas auxiliares utilizadas para conocer qué submenús deben aparecer expandidos.
 $transportNavPages = array();
 if ($mostrarTransportes) {
     $transportNavPages[] = 'camion_carga';
@@ -27,11 +17,10 @@ if ($mostrarChoferes) {
     $transportNavPages[] = 'choferes';
 }
 
-$viajesNavPages = array();
+$viajesNavPages = array('viajes_listado');
 if ($mostrarCargaViajes) {
     $viajesNavPages[] = 'viaje_carga';
 }
-$viajesNavPages[] = 'viajes_listado';
 
 $transportNavAbierto = in_array($currentPage, $transportNavPages, true);
 $viajesNavAbierto = in_array($currentPage, $viajesNavPages, true);
@@ -45,7 +34,7 @@ $viajesNavAbierto = in_array($currentPage, $viajesNavPages, true);
             </a>
         </li>
 
-        <?php if ($mostrarTransportes || $mostrarChoferes): // Bloque de transportes (camiones y choferes). ?>
+        <?php if ($mostrarTransportes || $mostrarChoferes): ?>
             <li class="nav-item">
                 <a class="nav-link <?php echo $transportNavAbierto ? '' : 'collapsed'; ?>" data-bs-target="#transportes-nav" data-bs-toggle="collapse" href="#">
                     <i class="bi bi-truck"></i><span>Transportes</span><i class="bi bi-chevron-down ms-auto"></i>

@@ -4,7 +4,7 @@ session_start();
 require_once 'funciones/conexion.php';
 require_once 'funciones/funciones.php';
 
-if (UsuarioEstaLogueado()) {
+if (!empty($_SESSION['Usuario_ID'])) {
     Redireccionar('index.php');
 }
 
@@ -26,7 +26,16 @@ if (!empty($_POST['BotonLogin'])) {
             if (isset($UsuarioLogueado['ACTIVO']) && $UsuarioLogueado['ACTIVO'] == 0) {
                 $Mensaje = 'Ud. no se encuentra activo en el sistema.';
             } else {
-                GuardarSesionUsuario($UsuarioLogueado);
+                $_SESSION['Usuario_ID'] = $UsuarioLogueado['ID'];
+                $_SESSION['Usuario_Nombre'] = $UsuarioLogueado['NOMBRE'];
+                $_SESSION['Usuario_Apellido'] = $UsuarioLogueado['APELLIDO'];
+                $_SESSION['Usuario_Usuario'] = $UsuarioLogueado['USUARIO'];
+                $_SESSION['Usuario_Nivel'] = $UsuarioLogueado['NIVEL'];
+                $_SESSION['Usuario_NombreNivel'] = $UsuarioLogueado['NIVEL_NOMBRE'];
+                $_SESSION['Usuario_Img'] = $UsuarioLogueado['IMG'];
+                $_SESSION['Usuario_Saludo'] = $UsuarioLogueado['SALUDO'];
+                $_SESSION['Usuario_Activo'] = $UsuarioLogueado['ACTIVO'];
+
                 Redireccionar('index.php');
             }
         } else {
@@ -39,26 +48,22 @@ require_once 'includes/header.php';
 ?>
 <main>
     <div class="container">
-        <!-- Sección centrada vertical y horizontalmente -->
         <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
-                        <!-- Encabezado con el logo del sistema -->
                         <div class="d-flex justify-content-center py-4">
                             <a href="login.php" class="logo d-flex align-items-center w-auto">
                                 <img src="assets/img/logo.png" alt="">
                                 <span class="d-none d-lg-block">Panel de Administración</span>
                             </a>
                         </div>
-                        <!-- Tarjeta Bootstrap que contiene el formulario -->
                         <div class="card mb-3 w-100">
                             <div class="card-body">
                                 <div class="pt-4 pb-2">
                                     <h5 class="card-title text-center pb-0 fs-4">Ingresa tu cuenta</h5>
                                     <p class="text-center small">Ingresa tus datos de usuario y clave</p>
                                 </div>
-                                <!-- Se muestran mensajes dinámicos según exista error o simplemente información -->
                                 <?php if (!empty($Mensaje)): ?>
                                     <div class="alert alert-warning" role="alert">
                                         <i class="bi bi-exclamation-triangle me-1"></i>
@@ -69,7 +74,6 @@ require_once 'includes/header.php';
                                         <i class="bi bi-info-circle me-1"></i> Los campos indicados con (*) son requeridos
                                     </div>
                                 <?php endif; ?>
-                                <!-- Formulario que envía los datos al mismo script -->
                                 <form class="row g-3" method="post" action="" novalidate>
                                     <div class="col-12">
                                         <label for="usuario" class="form-label">Usuario (*)</label>
@@ -88,7 +92,6 @@ require_once 'includes/header.php';
                                 </form>
                             </div>
                         </div>
-                        <!-- Créditos del template original -->
                         <div class="credits">
                             Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
                         </div>
@@ -99,6 +102,5 @@ require_once 'includes/header.php';
     </div>
 </main>
 <?php
-// Footer compartido que cierra el documento.
 require_once 'includes/footer.php';
 ?>
