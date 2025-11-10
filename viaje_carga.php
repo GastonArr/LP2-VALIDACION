@@ -1,13 +1,8 @@
 <?php
-/**
- * Formulario de alta de viajes.
- * Documentado línea a línea para comprender cómo se arma el viaje con chofer, transporte y destino.
- */
+session_start();
 
-// Conexión a la base de datos y helpers compartidos.
 require_once 'funciones/conexion.php';
 require_once 'funciones/funciones.php';
-// Evitamos accesos no autenticados.
 RequiereSesion();
 
 // Los choferes no pueden crear viajes; si detectamos uno lo derivamos a su listado.

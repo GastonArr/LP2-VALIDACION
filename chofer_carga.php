@@ -1,14 +1,8 @@
 <?php
-/**
- * Formulario de alta de choferes.
- * Se agrega documentación detallada para comprender cada paso del proceso.
- */
+session_start();
 
-// Archivo de conexión (crea el objeto PDO a la base de datos configurada).
 require_once 'funciones/conexion.php';
-// Biblioteca con funciones compartidas (gestión de sesión, validaciones, helpers, etc.).
 require_once 'funciones/funciones.php';
-// Previene que usuarios sin login vean la pantalla.
 RequiereSesion();
 
 // Solamente los administradores están habilitados para crear choferes.

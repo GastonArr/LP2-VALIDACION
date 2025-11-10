@@ -1,15 +1,8 @@
 <?php
-/**
- * Pantalla de registro de camiones/transportes.
- * Este archivo combina lógica de validación con la construcción del formulario HTML.
- * La idea es documentar línea por línea para que puedas estudiar cada paso del flujo.
- */
+session_start();
 
-// Se importa el archivo que conoce cómo conectarse a la base de datos.
 require_once 'funciones/conexion.php';
-// Se traen las funciones auxiliares compartidas (manejo de sesiones, validaciones, etc.).
 require_once 'funciones/funciones.php';
-// Antes de mostrar nada verificamos que exista una sesión activa, de lo contrario se redirige al login.
 RequiereSesion();
 
 // Si el usuario logueado es un chofer, lo sacamos de esta pantalla porque sólo el administrador puede registrar transportes.

@@ -1,13 +1,8 @@
 <?php
-/**
- * Dashboard principal. Aquí se contextualiza al usuario luego del inicio de sesión.
- */
+session_start();
 
-// Dependencia para acceder a la base de datos.
 require_once 'funciones/conexion.php';
-// Librería que agrupa helpers generales (manejo de sesión, funciones de usuario, etc.).
 require_once 'funciones/funciones.php';
-// Se exige sesión activa; de lo contrario, se corta el flujo.
 RequiereSesion();
 
 // El layout necesita saber el título y la opción activa del sidebar.
