@@ -7,20 +7,6 @@ if (!isset($_SESSION)) {
 }
 
 /**
- * Archivo: funciones/funciones.php (línea 12)
- * Propósito: Enviar al navegador una redirección controlada.
- * Descripción: Usa la cabecera HTTP Location para llevar al usuario a la ruta indicada y
- * termina el script inmediatamente, evitando que se siga ejecutando código posterior.
- * Retorna: void — No devuelve valor porque su responsabilidad es cambiar el flujo de
- * ejecución mediante la redirección y el exit.
- */
-function Redireccionar($Ruta)
-{
-    header('Location: ' . $Ruta);
-    exit;
-}
-
-/**
  * Archivo: funciones/funciones.php (línea 21)
  * Propósito: Validar credenciales de acceso y recuperar los datos del usuario.
  * Descripción: Construye una consulta SELECT sobre las tablas usuarios y niveles,
@@ -228,6 +214,11 @@ function Validar_Datos_Chofer($vConexion)
         $Mensaje .= 'La clave debe tener al menos 5 caracteres. <br />';
     }
 
+    foreach ($_POST as $Id => $Valor) {
+        $_POST[$Id] = trim($_POST[$Id]);
+        $_POST[$Id] = strip_tags($_POST[$Id]);
+    }
+
     return $Mensaje;
 }
 
@@ -270,12 +261,12 @@ function Validar_Datos_Transporte($vConexion)
 {
     $Mensaje = '';
 
-    $MarcaId = (int) $_POST['marca_id'];
+    $MarcaId = $_POST['marca_id'];
     $Modelo = $_POST['modelo'];
     $Anio = $_POST['anio'];
     $Patente = $_POST['patente'];
 
-    if ($MarcaId == 0) {
+    if (empty($MarcaId)) {
         $Mensaje .= 'Debes seleccionar una marca. <br />';
     }
 
@@ -295,6 +286,11 @@ function Validar_Datos_Transporte($vConexion)
         $Mensaje .= 'La patente debe tener entre 6 y 7 caracteres. <br />';
     }
 
+    foreach ($_POST as $Id => $Valor) {
+        $_POST[$Id] = trim($_POST[$Id]);
+        $_POST[$Id] = strip_tags($_POST[$Id]);
+    }
+
     return $Mensaje;
 }
 
@@ -309,20 +305,27 @@ function Validar_Datos_Transporte($vConexion)
  */
 function Insertar_Transporte($vConexion)
 {
-    $Marca = (int) $_POST['marca_id'];
+    $Marca = $_POST['marca_id'];
     $Modelo = $_POST['modelo'];
     $Patente = $_POST['patente'];
     $Anio = $_POST['anio'];
-    $Disponible = !empty($_POST['disponible']) ? 1 : 0;
 
-    if ($Anio === '') {
-        $Anio = 'NULL';
+    if (empty($_POST['disponible'])) {
+        $Disponible = 0;
     } else {
-        $Anio = (int) $Anio;
+        $Disponible = 1;
     }
 
-    $SQL = "INSERT INTO transportes (marca_id, modelo, patente, anio, disponible, fecha_creacion)
-            VALUES (" . $Marca . ", '" . $Modelo . "', '" . $Patente . "', " . $Anio . ", " . $Disponible . ", NOW())";
+    $SQL = "INSERT INTO transportes (marca_id, modelo, patente, anio, disponible, fecha_creacion) VALUES ("
+        . $Marca . ", '" . $Modelo . "', '" . $Patente . "', ";
+
+    if ($Anio === '') {
+        $SQL .= "NULL";
+    } else {
+        $SQL .= "'" . $Anio . "'";
+    }
+
+    $SQL .= ", " . $Disponible . ", NOW())";
 
     if (!mysqli_query($vConexion, $SQL)) {
         die('No se pudo ejecutar la inserción.');
@@ -344,22 +347,22 @@ function Validar_Datos_Viaje($vConexion)
 {
     $Mensaje = '';
 
-    $Chofer = (int) $_POST['chofer_id'];
-    $Transporte = (int) $_POST['transporte_id'];
-    $Destino = (int) $_POST['destino_id'];
+    $Chofer = $_POST['chofer_id'];
+    $Transporte = $_POST['transporte_id'];
+    $Destino = $_POST['destino_id'];
     $Fecha = $_POST['fecha_programada'];
     $Costo = $_POST['costo'];
     $Porcentaje = $_POST['porcentaje_chofer'];
 
-    if ($Chofer == 0) {
+    if (empty($Chofer)) {
         $Mensaje .= 'Debes seleccionar un chofer. <br />';
     }
 
-    if ($Transporte == 0) {
+    if (empty($Transporte)) {
         $Mensaje .= 'Debes seleccionar un transporte. <br />';
     }
 
-    if ($Destino == 0) {
+    if (empty($Destino)) {
         $Mensaje .= 'Debes seleccionar un destino. <br />';
     }
 
@@ -371,9 +374,7 @@ function Validar_Datos_Viaje($vConexion)
             $Dia = (int) $Partes[0];
             $Mes = (int) $Partes[1];
             $Anio = (int) $Partes[2];
-            if (checkdate($Mes, $Dia, $Anio)) {
-                $_POST['fecha_sql'] = $Anio . '-' . str_pad($Mes, 2, '0', STR_PAD_LEFT) . '-' . str_pad($Dia, 2, '0', STR_PAD_LEFT);
-            } else {
+            if (!checkdate($Mes, $Dia, $Anio)) {
                 $Mensaje .= 'La fecha debe tener un formato válido dd/mm/aaaa. <br />';
             }
         } else {
@@ -383,25 +384,21 @@ function Validar_Datos_Viaje($vConexion)
 
     if ($Costo === '') {
         $Mensaje .= 'Debes ingresar el costo. <br />';
-    } else {
-        $CostoNormalizado = str_replace('.', '', $Costo);
-        $CostoNormalizado = str_replace(',', '.', $CostoNormalizado);
-        if (!is_numeric($CostoNormalizado)) {
-            $Mensaje .= 'El costo debe ser numérico. <br />';
-        } else {
-            $_POST['costo_normalizado'] = $CostoNormalizado;
-        }
+    } elseif (!is_numeric($Costo)) {
+        $Mensaje .= 'El costo debe ser numérico. <br />';
     }
 
     if ($Porcentaje === '') {
         $Mensaje .= 'Debes ingresar el porcentaje del chofer. <br />';
     } elseif (!is_numeric($Porcentaje)) {
         $Mensaje .= 'El porcentaje debe ser numérico. <br />';
-    } else {
-        $Valor = (int) $Porcentaje;
-        if ($Valor < 0 || $Valor > 100) {
-            $Mensaje .= 'El porcentaje debe estar entre 0 y 100. <br />';
-        }
+    } elseif ($Porcentaje < 0 || $Porcentaje > 100) {
+        $Mensaje .= 'El porcentaje debe estar entre 0 y 100. <br />';
+    }
+
+    foreach ($_POST as $Id => $Valor) {
+        $_POST[$Id] = trim($_POST[$Id]);
+        $_POST[$Id] = strip_tags($_POST[$Id]);
     }
 
     return $Mensaje;
@@ -419,16 +416,33 @@ function Validar_Datos_Viaje($vConexion)
  */
 function Insertar_Viaje($vConexion)
 {
-    $Chofer = (int) $_POST['chofer_id'];
-    $Transporte = (int) $_POST['transporte_id'];
-    $Destino = (int) $_POST['destino_id'];
-    $Fecha = !empty($_POST['fecha_sql']) ? $_POST['fecha_sql'] : '';
-    $Costo = !empty($_POST['costo_normalizado']) ? $_POST['costo_normalizado'] : 0;
-    $Porcentaje = (int) $_POST['porcentaje_chofer'];
-    $CreadoPor = !empty($_SESSION['Usuario_ID']) ? (int) $_SESSION['Usuario_ID'] : 'NULL';
+    $Chofer = $_POST['chofer_id'];
+    $Transporte = $_POST['transporte_id'];
+    $Destino = $_POST['destino_id'];
+    $Costo = $_POST['costo'];
+    $Porcentaje = $_POST['porcentaje_chofer'];
 
-    $SQL = "INSERT INTO viajes (chofer_id, transporte_id, fecha_programada, destino_id, costo, porcentaje_chofer, creado_por, fecha_creacion)
-            VALUES (" . $Chofer . ", " . $Transporte . ", '" . $Fecha . "', " . $Destino . ", " . $Costo . ", " . $Porcentaje . ", " . $CreadoPor . ", NOW())";
+    $FechaSQL = '';
+    if (!empty($_POST['fecha_programada'])) {
+        $Partes = explode('/', $_POST['fecha_programada']);
+        if (count($Partes) == 3) {
+            $Dia = (int) $Partes[0];
+            $Mes = (int) $Partes[1];
+            $Anio = (int) $Partes[2];
+            if (checkdate($Mes, $Dia, $Anio)) {
+                $FechaSQL = $Anio . '-' . str_pad($Mes, 2, '0', STR_PAD_LEFT) . '-' . str_pad($Dia, 2, '0', STR_PAD_LEFT);
+            }
+        }
+    }
+
+    if (!empty($_SESSION['Usuario_ID'])) {
+        $CreadoPor = $_SESSION['Usuario_ID'];
+    } else {
+        $CreadoPor = 'NULL';
+    }
+
+    $SQL = "INSERT INTO viajes (chofer_id, transporte_id, fecha_programada, destino_id, costo, porcentaje_chofer, creado_por, fecha_creacion) VALUES ("
+        . $Chofer . ", " . $Transporte . ", '" . $FechaSQL . "', " . $Destino . ", " . $Costo . ", " . $Porcentaje . ", " . $CreadoPor . ", NOW())";
 
     if (!mysqli_query($vConexion, $SQL)) {
         die('No se pudo ejecutar la inserción.');

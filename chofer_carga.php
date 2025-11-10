@@ -106,7 +106,7 @@ require_once 'includes/sidebar.php';
                             </div>
                         <?php } ?>
                         <!-- Formulario de alta de chofer -->
-                        <form class="row g-3" method="post" action="" novalidate>
+                        <form class="row g-3" method="post" action="">
                             <!-- Campo para el apellido del chofer -->
                             <div class="col-12">
                                 <!-- Etiqueta asociada al input de apellido -->

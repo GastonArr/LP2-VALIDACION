@@ -9,8 +9,9 @@ require_once 'funciones/funciones.php';
 
 // Si el usuario ya tiene una sesión activa lo redirigimos directamente al panel principal
 if (!empty($_SESSION['Usuario_ID'])) {
-    // Usamos la función de ayuda para redirigir al dashboard
-    Redireccionar('index.php');
+    // Enviamos al usuario al panel principal como se vio en clase
+    header('Location: index.php');
+    exit;
 }
 
 // Abrimos la conexión a la base de datos para validar las credenciales
@@ -48,7 +49,8 @@ if (!empty($_POST['BotonLogin'])) {
                 $_SESSION['Usuario_Activo'] = $UsuarioLogueado['ACTIVO'];
 
                 // Redirigimos al usuario al panel una vez autenticado
-                Redireccionar('index.php');
+                header('Location: index.php');
+                exit;
             }
         } else {
             // Si las credenciales no son válidas informamos el error
@@ -110,7 +112,7 @@ require_once 'includes/header.php';
                                     </div>
                                 <?php endif; ?>
                                 <!-- Formulario de inicio de sesión -->
-                                <form class="row g-3" method="post" action="" novalidate>
+                                <form class="row g-3" method="post" action="">
                                     <!-- Campo para el nombre de usuario -->
                                     <div class="col-12">
                                         <!-- Etiqueta que identifica el input -->

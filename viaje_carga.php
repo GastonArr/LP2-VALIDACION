@@ -116,7 +116,7 @@ require_once 'includes/sidebar.php';
                             </div>
                         <?php } ?>
                         <!-- Formulario para crear un nuevo viaje -->
-                        <form class="row g-3" method="post" action="" novalidate>
+                        <form class="row g-3" method="post" action="">
                             <!-- Selector de chofer -->
                             <div class="col-12">
                                 <!-- Etiqueta para el campo del chofer -->

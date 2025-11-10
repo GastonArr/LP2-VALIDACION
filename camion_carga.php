@@ -122,7 +122,7 @@ require_once 'includes/sidebar.php';
                             </div>
                         <?php } ?>
                         <!-- Formulario para registrar un nuevo transporte -->
-                        <form class="row g-3" method="post" action="" novalidate>
+                        <form class="row g-3" method="post" action="">
                             <!-- Campo de selección de la marca del transporte -->
                             <div class="col-12">
                                 <!-- Etiqueta del campo marca -->
