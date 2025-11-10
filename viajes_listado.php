@@ -8,7 +8,7 @@ require_once 'funciones/conexion.php';
 require_once 'funciones/funciones.php';
 
 // Si no hay un usuario conectado, no se permite acceder al listado
-if (empty($_SESSION['Usuario_ID'])) {
+if (empty($_SESSION['Usuario_Nombre'])) {
     // Redirigimos a la pantalla de login
     header('Location: login.php');
     // Terminamos el script para proteger el contenido
