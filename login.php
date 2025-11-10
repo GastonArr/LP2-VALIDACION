@@ -9,8 +9,9 @@ require_once 'funciones/funciones.php';
 
 // Si el usuario ya tiene una sesión activa lo redirigimos directamente al panel principal
 if (!empty($_SESSION['Usuario_ID'])) {
-    // Usamos la función de ayuda para redirigir al dashboard
-    Redireccionar('index.php');
+    // Enviamos al usuario al panel principal como se vio en clase
+    header('Location: index.php');
+    exit;
 }
 
 // Abrimos la conexión a la base de datos para validar las credenciales
@@ -23,22 +24,17 @@ $Mensaje = '';
 
 // Verificamos si se envió el formulario de ingreso
 if (!empty($_POST['BotonLogin'])) {
-    // Normalizamos el usuario recibido eliminando espacios y pasando a minúsculas
-    $usuario = !empty($_POST['usuario']) ? strtolower(trim($_POST['usuario'])) : '';
-    // Tomamos la clave ingresada eliminando espacios extremos
-    $clave = !empty($_POST['clave']) ? trim($_POST['clave']) : '';
-
     // Si faltan datos mostramos un mensaje de aviso
-    if ($usuario === '' || $clave === '') {
+    if (empty($_POST['usuario']) || empty($_POST['clave'])) {
         $Mensaje = 'Debes ingresar el usuario y la clave.';
     } else {
         // Consultamos en la base de datos si las credenciales son válidas
-        $UsuarioLogueado = DatosLogin($usuario, $clave, $MiConexion);
+        $UsuarioLogueado = DatosLogin($_POST['usuario'], $_POST['clave'], $MiConexion);
 
         // Si encontramos un registro procesamos el acceso
         if (!empty($UsuarioLogueado)) {
             // TODO ESTE CHEQUEO REVISA EL ESTADO ACTIVO: SI LA BANDERA ES CERO SE IMPIDE EL ACCESO AUNQUE LAS CREDENCIALES SEAN VALIDAS
-            if (isset($UsuarioLogueado['ACTIVO']) && $UsuarioLogueado['ACTIVO'] == 0) {
+            if ($UsuarioLogueado['ACTIVO'] == 0) {
                 $Mensaje = 'Ud. no se encuentra activo en el sistema.';
             } else {
                 // Guardamos todos los datos relevantes en la sesión para reutilizarlos
@@ -53,7 +49,8 @@ if (!empty($_POST['BotonLogin'])) {
                 $_SESSION['Usuario_Activo'] = $UsuarioLogueado['ACTIVO'];
 
                 // Redirigimos al usuario al panel una vez autenticado
-                Redireccionar('index.php');
+                header('Location: index.php');
+                exit;
             }
         } else {
             // Si las credenciales no son válidas informamos el error
@@ -105,7 +102,7 @@ require_once 'includes/header.php';
                                         <!-- Icono de advertencia -->
                                         <i class="bi bi-exclamation-triangle me-1"></i>
                                         <!-- Texto del mensaje -->
-                                        <?php echo htmlspecialchars($Mensaje); ?>
+                                        <?php echo $Mensaje; ?>
                                     </div>
                                 <?php else: ?>
                                     <!-- Alerta informativa cuando aún no hay errores -->
@@ -115,7 +112,7 @@ require_once 'includes/header.php';
                                     </div>
                                 <?php endif; ?>
                                 <!-- Formulario de inicio de sesión -->
-                                <form class="row g-3" method="post" action="" novalidate>
+                                <form class="row g-3" method="post" action="">
                                     <!-- Campo para el nombre de usuario -->
                                     <div class="col-12">
                                         <!-- Etiqueta que identifica el input -->
@@ -125,7 +122,7 @@ require_once 'includes/header.php';
                                             <!-- Prefijo visual con símbolo de usuario -->
                                             <span class="input-group-text" id="inputGroupPrepend">@</span>
                                             <!-- Input donde se escribe el usuario y persiste el valor ingresado -->
-                                            <input type="text" name="usuario" class="form-control" id="usuario" value="<?php echo !empty($_POST['usuario']) ? htmlspecialchars($_POST['usuario']) : ''; ?>" required>
+                                            <input type="text" name="usuario" class="form-control" id="usuario" value="<?php echo !empty($_POST['usuario']) ? $_POST['usuario'] : ''; ?>">
                                         </div>
                                     </div>
                                     <!-- Campo para la contraseña -->
@@ -133,7 +130,7 @@ require_once 'includes/header.php';
                                         <!-- Etiqueta para el input de clave -->
                                         <label for="clave" class="form-label">Clave (*)</label>
                                         <!-- Input de tipo password que oculta los caracteres -->
-                                        <input type="password" name="clave" class="form-control" id="clave" required>
+                                        <input type="password" name="clave" class="form-control" id="clave">
                                     </div>
                                     <!-- Contenedor para el botón de envío -->
                                     <div class="col-12">

@@ -122,13 +122,13 @@ require_once 'includes/sidebar.php';
                             </div>
                         <?php } ?>
                         <!-- Formulario para registrar un nuevo transporte -->
-                        <form class="row g-3" method="post" action="" novalidate>
+                        <form class="row g-3" method="post" action="">
                             <!-- Campo de selección de la marca del transporte -->
                             <div class="col-12">
                                 <!-- Etiqueta del campo marca -->
                                 <label for="marca_id" class="form-label">Marca (*)</label>
                                 <!-- Selector desplegable con las opciones de marcas -->
-                                <select class="form-select" id="marca_id" name="marca_id" required>
+                                <select class="form-select" id="marca_id" name="marca_id">
                                     <!-- Opción por defecto para obligar a elegir una marca -->
                                     <option value="">Selecciona una opción</option>
                                     <?php
@@ -150,21 +150,21 @@ require_once 'includes/sidebar.php';
                                 <!-- Etiqueta del campo modelo -->
                                 <label for="modelo" class="form-label">Modelo (*)</label>
                                 <!-- Entrada de texto con el valor persistente en caso de error -->
-                                <input type="text" class="form-control" id="modelo" name="modelo" value="<?php echo !empty($ModeloValor) ? htmlspecialchars($ModeloValor) : ''; ?>" required>
+                                <input type="text" class="form-control" id="modelo" name="modelo" value="<?php echo !empty($ModeloValor) ? $ModeloValor : ''; ?>">
                             </div>
                             <!-- Campo de texto para registrar el año del vehículo -->
                             <div class="col-6">
                                 <!-- Etiqueta del campo año -->
                                 <label for="anio" class="form-label">Año</label>
                                 <!-- Entrada donde se espera un formato de año de cuatro dígitos -->
-                                <input type="text" class="form-control" id="anio" name="anio" value="<?php echo !empty($AnioValor) ? htmlspecialchars($AnioValor) : ''; ?>" placeholder="AAAA">
+                                <input type="text" class="form-control" id="anio" name="anio" value="<?php echo !empty($AnioValor) ? $AnioValor : ''; ?>" placeholder="AAAA">
                             </div>
                             <!-- Campo de texto para registrar la patente -->
                             <div class="col-6">
                                 <!-- Etiqueta del campo patente -->
                                 <label for="patente" class="form-label">Patente (*)</label>
                                 <!-- Entrada que guarda la patente ya ingresada si existió un error -->
-                                <input type="text" class="form-control" id="patente" name="patente" value="<?php echo !empty($PatenteValor) ? htmlspecialchars($PatenteValor) : ''; ?>" required>
+                                <input type="text" class="form-control" id="patente" name="patente" value="<?php echo !empty($PatenteValor) ? $PatenteValor : ''; ?>">
                             </div>
                             <!-- Campo para indicar si el transporte está habilitado -->
                             <div class="col-12">
