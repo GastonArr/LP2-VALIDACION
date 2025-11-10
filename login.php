@@ -125,7 +125,7 @@ require_once 'includes/header.php';
                                             <!-- Prefijo visual con símbolo de usuario -->
                                             <span class="input-group-text" id="inputGroupPrepend">@</span>
                                             <!-- Input donde se escribe el usuario y persiste el valor ingresado -->
-                                            <input type="text" name="usuario" class="form-control" id="usuario" value="<?php echo !empty($_POST['usuario']) ? $_POST['usuario'] : ''; ?>" required>
+                                            <input type="text" name="usuario" class="form-control" id="usuario" value="<?php echo !empty($_POST['usuario']) ? $_POST['usuario'] : ''; ?>">
                                         </div>
                                     </div>
                                     <!-- Campo para la contraseña -->
@@ -133,7 +133,7 @@ require_once 'includes/header.php';
                                         <!-- Etiqueta para el input de clave -->
                                         <label for="clave" class="form-label">Clave (*)</label>
                                         <!-- Input de tipo password que oculta los caracteres -->
-                                        <input type="password" name="clave" class="form-control" id="clave" required>
+                                        <input type="password" name="clave" class="form-control" id="clave">
                                     </div>
                                     <!-- Contenedor para el botón de envío -->
                                     <div class="col-12">
