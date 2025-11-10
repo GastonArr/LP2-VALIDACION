@@ -189,8 +189,8 @@ function Listar_Destinos($vConexion)
  * Archivo: funciones/funciones.php (línea 136)
  * Propósito: Validar la información ingresada al crear un chofer.
  * Descripción: Obtiene los datos enviados por POST, verifica longitud de textos y
- * estructura del DNI y consulta funciones auxiliares para confirmar que usuario y DNI no
- * estén repetidos. Trabaja con los valores tal como fueron ingresados en el formulario.
+ * estructura del DNI tal como se trabajó en clase. No realiza controles extras contra la
+ * base de datos; simplemente valida el formato de lo ingresado.
  * Retorna: string — Devuelve un mensaje concatenado con todos los errores detectados; si
  * es una cadena vacía significa que los datos están listos para guardarse.
  */
@@ -216,14 +216,10 @@ function Validar_Datos_Chofer($vConexion)
         $Mensaje .= 'Debes ingresar el DNI. <br />';
     } elseif (!is_numeric($Dni) || strlen($Dni) < 7 || strlen($Dni) > 8) {
         $Mensaje .= 'El DNI debe tener 7 u 8 dígitos. <br />';
-    } elseif (ExisteDNI($Dni, $vConexion)) {
-        $Mensaje .= 'El DNI ingresado ya se encuentra registrado. <br />';
     }
 
     if ($Usuario === '') {
         $Mensaje .= 'Debes ingresar el usuario. <br />';
-    } elseif (ExisteUsuario($Usuario, $vConexion)) {
-        $Mensaje .= 'El usuario ingresado ya existe. <br />';
     }
 
     if ($Clave === '') {
@@ -265,11 +261,10 @@ function Insertar_Chofer($vConexion)
 /**
  * Archivo: funciones/funciones.php (línea 206)
  * Propósito: Revisar que los datos del formulario de transporte sean válidos.
- * Descripción: Evalúa selección de marca, formato de modelo, año y patente; verifica que
- * la patente no esté repetida consultando la base y conserva los valores tal como se
- * enviaron desde el formulario.
+ * Descripción: Evalúa selección de marca, formato de modelo, año y patente conservando los
+ * valores enviados desde el formulario, tal como se mostró en los ejemplos de clase.
  * Retorna: string — Entrega un texto con los errores encontrados; si la cadena queda
- * vacía significa que los datos superaron todas las validaciones.
+ * vacía significa que los datos superaron todas las validaciones básicas.
  */
 function Validar_Datos_Transporte($vConexion)
 {
@@ -298,8 +293,6 @@ function Validar_Datos_Transporte($vConexion)
         $Mensaje .= 'Debes ingresar la patente. <br />';
     } elseif (strlen($Patente) < 6 || strlen($Patente) > 7) {
         $Mensaje .= 'La patente debe tener entre 6 y 7 caracteres. <br />';
-    } elseif (ExistePatente($Patente, $vConexion)) {
-        $Mensaje .= 'La patente ingresada ya se encuentra registrada. <br />';
     }
 
     return $Mensaje;
@@ -341,9 +334,9 @@ function Insertar_Transporte($vConexion)
 /**
  * Archivo: funciones/funciones.php (línea 275)
  * Propósito: Verificar que la información de un viaje programado sea coherente.
- * Descripción: Controla que el chofer, transporte y destino existan en la base utilizando
- * funciones de existencia; valida el formato de fecha convirtiéndolo a YYYY-mm-dd y
- * normaliza importes y porcentajes usando los mismos datos ingresados por el usuario.
+ * Descripción: Controla que el chofer, transporte y destino se hayan elegido en el
+ * formulario, valida el formato de fecha convirtiéndolo a YYYY-mm-dd y normaliza importes
+ * y porcentajes usando los mismos datos ingresados por el usuario.
  * Retorna: string — Devuelve una cadena con todos los mensajes de error encontrados; si
  * no se detecta nada, retorna una cadena vacía indicando que se puede grabar el viaje.
  */
@@ -360,20 +353,14 @@ function Validar_Datos_Viaje($vConexion)
 
     if ($Chofer == 0) {
         $Mensaje .= 'Debes seleccionar un chofer. <br />';
-    } elseif (!ExisteChofer($Chofer, $vConexion)) {
-        $Mensaje .= 'El chofer seleccionado no es válido. <br />';
     }
 
     if ($Transporte == 0) {
         $Mensaje .= 'Debes seleccionar un transporte. <br />';
-    } elseif (!ExisteTransporte($Transporte, $vConexion)) {
-        $Mensaje .= 'El transporte seleccionado no es válido. <br />';
     }
 
     if ($Destino == 0) {
         $Mensaje .= 'Debes seleccionar un destino. <br />';
-    } elseif (!ExisteDestino($Destino, $vConexion)) {
-        $Mensaje .= 'El destino seleccionado no es válido. <br />';
     }
 
     if ($Fecha === '') {
@@ -499,143 +486,6 @@ function Listar_Viajes($vConexion, $ChoferId = null)
     }
 
     return $Listado;
-}
-
-/**
- * Archivo: funciones/funciones.php (línea 414)
- * Propósito: Comprobar si un nombre de usuario ya está registrado.
- * Descripción: Ejecuta una consulta SELECT sobre la tabla usuarios filtrando por el
- * nombre recibido y analiza si existe al menos una fila. Esto ayuda a evitar duplicados
- * al crear nuevos usuarios o choferes.
- * Retorna: bool — Regresa true cuando encuentra un usuario coincidente; false cuando no
- * existe o si la consulta falla.
- */
-function ExisteUsuario($Usuario, $vConexion)
-{
-    $SQL = "SELECT id FROM usuarios WHERE usuario = '" . $Usuario . "'";
-    $rs = mysqli_query($vConexion, $SQL);
-
-    if ($rs == false) {
-        return false;
-    }
-
-    $Existe = mysqli_fetch_array($rs);
-
-    // TODO ESTA LINEA COMPRUEBA DUPLICADOS: SI LA CONSULTA DEVUELVE DATOS, INDICA QUE EL USUARIO YA EXISTE Y RETORNA TRUE PARA BLOQUEAR UNA CREACION REPETIDA
-    return !empty($Existe);
-}
-
-/**
- * Archivo: funciones/funciones.php (línea 428)
- * Propósito: Verificar si un número de DNI ya fue cargado previamente.
- * Descripción: Consulta la tabla usuarios buscando coincidencias exactas de DNI y usa el
- * resultado para impedir que se registren dos choferes con la misma identidad.
- * Retorna: bool — Devuelve true cuando encuentra un registro con ese DNI; false si no hay
- * coincidencias o si la consulta falla.
- */
-function ExisteDNI($Dni, $vConexion)
-{
-    $SQL = "SELECT id FROM usuarios WHERE dni = '" . $Dni . "'";
-    $rs = mysqli_query($vConexion, $SQL);
-
-    if ($rs == false) {
-        return false;
-    }
-
-    $Existe = mysqli_fetch_array($rs);
-
-    // TODO ESTA VALIDACION EVITA DUPLICADOS DE DNI: AL DETECTAR UNA FILA RESULTANTE SABEMOS QUE EL DOCUMENTO YA ESTA CARGADO Y RESPONDEMOS TRUE PARA IMPEDIR REGISTROS REPETIDOS
-    return !empty($Existe);
-}
-
-/**
- * Archivo: funciones/funciones.php (línea 442)
- * Propósito: Validar que una patente no esté repetida en la flota.
- * Descripción: Ejecuta una consulta sobre la tabla transportes filtrando la patente. El
- * resultado se usa en la validación del formulario para impedir duplicar vehículos.
- * Retorna: bool — Retorna true si encuentra al menos un transporte con la misma patente;
- * false en caso contrario o si la consulta no puede ejecutarse.
- */
-function ExistePatente($Patente, $vConexion)
-{
-    $SQL = "SELECT id FROM transportes WHERE patente = '" . $Patente . "'";
-    $rs = mysqli_query($vConexion, $SQL);
-
-    if ($rs == false) {
-        return false;
-    }
-
-    $Existe = mysqli_fetch_array($rs);
-
-    // TODO ACA SE CONTROLAN PATENTES DUPLICADAS: SI EXISTE UN TRANSPORTE CON LA MISMA PATENTE SE DEVUELVE TRUE PARA EVITAR CARGAR UN VEHICULO REPETIDO
-    return !empty($Existe);
-}
-
-/**
- * Archivo: funciones/funciones.php (línea 456)
- * Propósito: Confirmar que un identificador pertenezca a un chofer válido.
- * Descripción: Busca en la tabla usuarios el ID recibido y además verifica que su nivel
- * sea el correspondiente a chofer. Se utiliza al validar viajes para asegurar la
- * integridad de los datos.
- * Retorna: bool — Devuelve true si encuentra un chofer activo con ese ID; false cuando no
- * hay coincidencias o la consulta falla.
- */
-function ExisteChofer($ChoferId, $vConexion)
-{
-    $SQL = "SELECT id FROM usuarios WHERE id = " . (int) $ChoferId . " AND id_nivel = 3";
-    $rs = mysqli_query($vConexion, $SQL);
-
-    if ($rs == false) {
-        return false;
-    }
-
-    $Existe = mysqli_fetch_array($rs);
-
-    return !empty($Existe);
-}
-
-/**
- * Archivo: funciones/funciones.php (línea 470)
- * Propósito: Verificar la existencia de un transporte antes de relacionarlo a un viaje.
- * Descripción: Realiza una consulta simple a la tabla transportes buscando por ID. Esta
- * validación evita asignar viajes a registros inexistentes o eliminados.
- * Retorna: bool — Regresa true cuando encuentra el transporte; false si no existe o la
- * consulta devuelve error.
- */
-function ExisteTransporte($TransporteId, $vConexion)
-{
-    $SQL = "SELECT id FROM transportes WHERE id = " . (int) $TransporteId;
-    $rs = mysqli_query($vConexion, $SQL);
-
-    if ($rs == false) {
-        return false;
-    }
-
-    $Existe = mysqli_fetch_array($rs);
-
-    return !empty($Existe);
-}
-
-/**
- * Archivo: funciones/funciones.php (línea 484)
- * Propósito: Chequear que un destino solicitado siga disponible en la base.
- * Descripción: Consulta la tabla destinos por ID y se utiliza durante la validación de
- * viajes para evitar referencias a destinos eliminados o inexistentes.
- * Retorna: bool — Devuelve true cuando el destino existe; false en caso contrario o si se
- * produce un error al ejecutar la consulta.
- */
-function ExisteDestino($DestinoId, $vConexion)
-{
-    $SQL = "SELECT id FROM destinos WHERE id = " . (int) $DestinoId;
-    $rs = mysqli_query($vConexion, $SQL);
-
-    if ($rs == false) {
-        return false;
-    }
-
-    $Existe = mysqli_fetch_array($rs);
-
-    return !empty($Existe);
 }
 
 ?>
