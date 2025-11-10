@@ -198,11 +198,11 @@ function Validar_Datos_Chofer($vConexion)
 {
     $Mensaje = '';
 
-    $Apellido = isset($_POST['apellido']) ? $_POST['apellido'] : '';
-    $Nombre = isset($_POST['nombre']) ? $_POST['nombre'] : '';
-    $Dni = isset($_POST['dni']) ? $_POST['dni'] : '';
-    $Usuario = isset($_POST['usuario']) ? $_POST['usuario'] : '';
-    $Clave = isset($_POST['clave']) ? $_POST['clave'] : '';
+    $Apellido = $_POST['apellido'];
+    $Nombre = $_POST['nombre'];
+    $Dni = $_POST['dni'];
+    $Usuario = $_POST['usuario'];
+    $Clave = $_POST['clave'];
 
     if (strlen($Apellido) < 2) {
         $Mensaje .= 'Debes ingresar un apellido con al menos 2 caracteres. <br />';
@@ -246,11 +246,11 @@ function Validar_Datos_Chofer($vConexion)
  */
 function Insertar_Chofer($vConexion)
 {
-    $Apellido = isset($_POST['apellido']) ? $_POST['apellido'] : '';
-    $Nombre = isset($_POST['nombre']) ? $_POST['nombre'] : '';
-    $Dni = isset($_POST['dni']) ? $_POST['dni'] : '';
-    $Usuario = isset($_POST['usuario']) ? $_POST['usuario'] : '';
-    $Clave = isset($_POST['clave']) ? $_POST['clave'] : '';
+    $Apellido = $_POST['apellido'];
+    $Nombre = $_POST['nombre'];
+    $Dni = $_POST['dni'];
+    $Usuario = $_POST['usuario'];
+    $Clave = $_POST['clave'];
 
     $SQL = "INSERT INTO usuarios (apellido, nombre, dni, usuario, clave, activo, id_nivel, fecha_creacion)
             VALUES ('" . $Apellido . "', '" . $Nombre . "', '" . $Dni . "', '" . $Usuario . "', '" . $Clave . "', 1, 3, NOW())";
@@ -275,10 +275,10 @@ function Validar_Datos_Transporte($vConexion)
 {
     $Mensaje = '';
 
-    $MarcaId = isset($_POST['marca_id']) ? (int) $_POST['marca_id'] : 0;
-    $Modelo = isset($_POST['modelo']) ? $_POST['modelo'] : '';
-    $Anio = isset($_POST['anio']) ? $_POST['anio'] : '';
-    $Patente = isset($_POST['patente']) ? $_POST['patente'] : '';
+    $MarcaId = (int) $_POST['marca_id'];
+    $Modelo = $_POST['modelo'];
+    $Anio = $_POST['anio'];
+    $Patente = $_POST['patente'];
 
     if ($MarcaId == 0) {
         $Mensaje .= 'Debes seleccionar una marca. <br />';
@@ -316,10 +316,10 @@ function Validar_Datos_Transporte($vConexion)
  */
 function Insertar_Transporte($vConexion)
 {
-    $Marca = isset($_POST['marca_id']) ? (int) $_POST['marca_id'] : 0;
-    $Modelo = isset($_POST['modelo']) ? $_POST['modelo'] : '';
-    $Patente = isset($_POST['patente']) ? $_POST['patente'] : '';
-    $Anio = isset($_POST['anio']) ? $_POST['anio'] : '';
+    $Marca = (int) $_POST['marca_id'];
+    $Modelo = $_POST['modelo'];
+    $Patente = $_POST['patente'];
+    $Anio = $_POST['anio'];
     $Disponible = !empty($_POST['disponible']) ? 1 : 0;
 
     if ($Anio === '') {
@@ -351,12 +351,12 @@ function Validar_Datos_Viaje($vConexion)
 {
     $Mensaje = '';
 
-    $Chofer = isset($_POST['chofer_id']) ? (int) $_POST['chofer_id'] : 0;
-    $Transporte = isset($_POST['transporte_id']) ? (int) $_POST['transporte_id'] : 0;
-    $Destino = isset($_POST['destino_id']) ? (int) $_POST['destino_id'] : 0;
-    $Fecha = isset($_POST['fecha_programada']) ? $_POST['fecha_programada'] : '';
-    $Costo = isset($_POST['costo']) ? $_POST['costo'] : '';
-    $Porcentaje = isset($_POST['porcentaje_chofer']) ? $_POST['porcentaje_chofer'] : '';
+    $Chofer = (int) $_POST['chofer_id'];
+    $Transporte = (int) $_POST['transporte_id'];
+    $Destino = (int) $_POST['destino_id'];
+    $Fecha = $_POST['fecha_programada'];
+    $Costo = $_POST['costo'];
+    $Porcentaje = $_POST['porcentaje_chofer'];
 
     if ($Chofer == 0) {
         $Mensaje .= 'Debes seleccionar un chofer. <br />';
@@ -432,12 +432,12 @@ function Validar_Datos_Viaje($vConexion)
  */
 function Insertar_Viaje($vConexion)
 {
-    $Chofer = isset($_POST['chofer_id']) ? (int) $_POST['chofer_id'] : 0;
-    $Transporte = isset($_POST['transporte_id']) ? (int) $_POST['transporte_id'] : 0;
-    $Destino = isset($_POST['destino_id']) ? (int) $_POST['destino_id'] : 0;
+    $Chofer = (int) $_POST['chofer_id'];
+    $Transporte = (int) $_POST['transporte_id'];
+    $Destino = (int) $_POST['destino_id'];
     $Fecha = !empty($_POST['fecha_sql']) ? $_POST['fecha_sql'] : '';
     $Costo = !empty($_POST['costo_normalizado']) ? $_POST['costo_normalizado'] : 0;
-    $Porcentaje = isset($_POST['porcentaje_chofer']) ? (int) $_POST['porcentaje_chofer'] : 0;
+    $Porcentaje = (int) $_POST['porcentaje_chofer'];
     $CreadoPor = !empty($_SESSION['Usuario_ID']) ? (int) $_SESSION['Usuario_ID'] : 'NULL';
 
     $SQL = "INSERT INTO viajes (chofer_id, transporte_id, fecha_programada, destino_id, costo, porcentaje_chofer, creado_por, fecha_creacion)

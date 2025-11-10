@@ -23,21 +23,17 @@ $Mensaje = '';
 
 // Verificamos si se envió el formulario de ingreso
 if (!empty($_POST['BotonLogin'])) {
-    // Tomamos el usuario y la clave tal como fueron cargados en el formulario
-    $usuario = !empty($_POST['usuario']) ? $_POST['usuario'] : '';
-    $clave = !empty($_POST['clave']) ? $_POST['clave'] : '';
-
     // Si faltan datos mostramos un mensaje de aviso
-    if ($usuario === '' || $clave === '') {
+    if (empty($_POST['usuario']) || empty($_POST['clave'])) {
         $Mensaje = 'Debes ingresar el usuario y la clave.';
     } else {
         // Consultamos en la base de datos si las credenciales son válidas
-        $UsuarioLogueado = DatosLogin($usuario, $clave, $MiConexion);
+        $UsuarioLogueado = DatosLogin($_POST['usuario'], $_POST['clave'], $MiConexion);
 
         // Si encontramos un registro procesamos el acceso
         if (!empty($UsuarioLogueado)) {
             // TODO ESTE CHEQUEO REVISA EL ESTADO ACTIVO: SI LA BANDERA ES CERO SE IMPIDE EL ACCESO AUNQUE LAS CREDENCIALES SEAN VALIDAS
-            if (isset($UsuarioLogueado['ACTIVO']) && $UsuarioLogueado['ACTIVO'] == 0) {
+            if ($UsuarioLogueado['ACTIVO'] == 0) {
                 $Mensaje = 'Ud. no se encuentra activo en el sistema.';
             } else {
                 // Guardamos todos los datos relevantes en la sesión para reutilizarlos
