@@ -8,7 +8,7 @@ require_once 'funciones/conexion.php';
 require_once 'funciones/funciones.php';
 
 // Si no existe un usuario autenticado redirigimos al formulario de inicio de sesión
-if (empty($_SESSION['Usuario_Nombre'])) {
+if (empty($_SESSION['Usuario_ID'])) {
     // Indicamos el destino de la redirección a la página de login
     header('Location: login.php');
     // Terminamos la ejecución del script después de enviar la redirección
@@ -122,7 +122,7 @@ require_once 'includes/sidebar.php';
                             </div>
                         <?php } ?>
                         <!-- Formulario para registrar un nuevo transporte -->
-                        <form class="row g-3" method="post" action="">
+                        <form class="row g-3" method="post" action="" novalidate>
                             <!-- Campo de selección de la marca del transporte -->
                             <div class="col-12">
                                 <!-- Etiqueta del campo marca -->
