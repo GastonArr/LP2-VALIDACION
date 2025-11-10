@@ -1,56 +1,40 @@
 <?php
-/**
- * Formulario de autenticación del panel.
- * El objetivo es explicar cada paso para entender cómo funciona el login.
- */
+session_start();
 
-// Dependencias necesarias para conectarse a la base y usar funciones compartidas.
 require_once 'funciones/conexion.php';
 require_once 'funciones/funciones.php';
 
-// Si alguien ya inició sesión se evita mostrar otra vez el login y se lo redirige al dashboard.
 if (UsuarioEstaLogueado()) {
     Redireccionar('index.php');
 }
 
-// Creamos la conexión para poder consultar usuarios.
 $MiConexion = ConexionBD();
 
-// Variables utilizadas por la plantilla y para almacenar mensajes de error.
 $pageTitle = 'Panel de Administración - Login';
 $Mensaje = '';
 
-// Al enviar el formulario (botón Login) se ejecuta la validación.
 if (!empty($_POST['BotonLogin'])) {
-    // Se normaliza el usuario en minúsculas y se remueven espacios.
     $usuario = !empty($_POST['usuario']) ? strtolower(trim($_POST['usuario'])) : '';
-    // La clave solo se recorta para evitar espacios accidentales.
     $clave = !empty($_POST['clave']) ? trim($_POST['clave']) : '';
 
-    // Validación básica: ambos campos deben venir cargados.
     if ($usuario === '' || $clave === '') {
         $Mensaje = 'Debes ingresar el usuario y la clave.';
     } else {
-        // Consulta a la base para verificar si los datos son válidos.
         $UsuarioLogueado = DatosLogin($usuario, $clave, $MiConexion);
 
         if (!empty($UsuarioLogueado)) {
-            // Si el usuario existe pero está marcado como inactivo se informa la situación.
             if (isset($UsuarioLogueado['ACTIVO']) && $UsuarioLogueado['ACTIVO'] == 0) {
                 $Mensaje = 'Ud. no se encuentra activo en el sistema.';
             } else {
-                // Credenciales correctas: se guarda la sesión y se va al panel principal.
                 GuardarSesionUsuario($UsuarioLogueado);
                 Redireccionar('index.php');
             }
         } else {
-            // Caso en que usuario/clave no coinciden.
             $Mensaje = 'Datos incorrectos, ingresa nuevamente.';
         }
     }
 }
 
-// Se incluye el header del template que abre el <html> y aplica estilos.
 require_once 'includes/header.php';
 ?>
 <main>

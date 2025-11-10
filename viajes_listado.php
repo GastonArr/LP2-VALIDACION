@@ -1,13 +1,8 @@
 <?php
-/**
- * Listado de viajes.
- * Aquí se muestra cómo se filtra la información según el nivel del usuario y se construye la tabla.
- */
+session_start();
 
-// Dependencias necesarias para la base y los helpers.
 require_once 'funciones/conexion.php';
 require_once 'funciones/funciones.php';
-// Solo usuarios autenticados pueden ingresar.
 RequiereSesion();
 
 // Conexión activa a la base de datos.
