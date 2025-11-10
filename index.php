@@ -25,15 +25,14 @@ $apellidoUsuario = !empty($_SESSION['Usuario_Apellido']) ? $_SESSION['Usuario_Ap
 // Recuperamos el nombre del usuario almacenado en la sesión
 $nombreUsuario = !empty($_SESSION['Usuario_Nombre']) ? $_SESSION['Usuario_Nombre'] : '';
 
-// Construimos el nombre completo concatenando apellido y nombre
-$nombreCompleto = trim($apellidoUsuario . ', ' . $nombreUsuario);
-// Si alguno de los datos está vacío generamos una versión alternativa
-if ($apellidoUsuario === '' || $nombreUsuario === '') {
-    // En este caso unimos los datos con un espacio para evitar una coma sobrante
-    $nombreCompleto = trim($apellidoUsuario . ' ' . $nombreUsuario);
-}
-// Si aún así no se obtuvo información asignamos un texto genérico
-if ($nombreCompleto === '') {
+// Construimos el nombre completo concatenando apellido y nombre según estén disponibles
+if ($apellidoUsuario !== '' && $nombreUsuario !== '') {
+    $nombreCompleto = $apellidoUsuario . ', ' . $nombreUsuario;
+} elseif ($apellidoUsuario !== '') {
+    $nombreCompleto = $apellidoUsuario;
+} elseif ($nombreUsuario !== '') {
+    $nombreCompleto = $nombreUsuario;
+} else {
     $nombreCompleto = 'Usuario';
 }
 
@@ -95,9 +94,9 @@ require_once 'includes/sidebar.php';
                     <!-- Cuerpo de la tarjeta -->
                     <div class="card-body">
                         <!-- Saludo personalizado que incluye el nombre y el nivel del usuario -->
-                        <h5 class="card-title">Hola, <?php echo htmlspecialchars($nombreCompleto); ?> (<?php echo htmlspecialchars($denominacionNivel); ?>)!</h5>
+                        <h5 class="card-title">Hola, <?php echo $nombreCompleto; ?> (<?php echo $denominacionNivel; ?>)!</h5>
                         <!-- Párrafo que explica las funcionalidades disponibles según el nivel -->
-                        <p class="card-text">Desde este panel podrás gestionar la operación diaria del sistema. Según tu función, podrás gestionar: <?php echo htmlspecialchars($funcionesPermitidas); ?>.</p>
+                        <p class="card-text">Desde este panel podrás gestionar la operación diaria del sistema. Según tu función, podrás gestionar: <?php echo $funcionesPermitidas; ?>.</p>
                     </div>
                 </div>
             </div>

@@ -187,10 +187,10 @@ function Listar_Destinos($vConexion)
 
 /**
  * Archivo: funciones/funciones.php (línea 136)
- * Propósito: Validar y sanitizar la información ingresada al crear un chofer.
- * Descripción: Obtiene los datos enviados por POST, verifica longitud de textos,
- * estructura del DNI y unicidad de usuario/DNI consultando funciones auxiliares. Además
- * limpia el arreglo $_POST para evitar código malicioso y normaliza el nombre de usuario.
+ * Propósito: Validar la información ingresada al crear un chofer.
+ * Descripción: Obtiene los datos enviados por POST, verifica longitud de textos y
+ * estructura del DNI y consulta funciones auxiliares para confirmar que usuario y DNI no
+ * estén repetidos. Trabaja con los valores tal como fueron ingresados en el formulario.
  * Retorna: string — Devuelve un mensaje concatenado con todos los errores detectados; si
  * es una cadena vacía significa que los datos están listos para guardarse.
  */
@@ -198,11 +198,11 @@ function Validar_Datos_Chofer($vConexion)
 {
     $Mensaje = '';
 
-    $Apellido = isset($_POST['apellido']) ? trim($_POST['apellido']) : '';
-    $Nombre = isset($_POST['nombre']) ? trim($_POST['nombre']) : '';
-    $Dni = isset($_POST['dni']) ? trim($_POST['dni']) : '';
-    $Usuario = isset($_POST['usuario']) ? trim($_POST['usuario']) : '';
-    $Clave = isset($_POST['clave']) ? trim($_POST['clave']) : '';
+    $Apellido = isset($_POST['apellido']) ? $_POST['apellido'] : '';
+    $Nombre = isset($_POST['nombre']) ? $_POST['nombre'] : '';
+    $Dni = isset($_POST['dni']) ? $_POST['dni'] : '';
+    $Usuario = isset($_POST['usuario']) ? $_POST['usuario'] : '';
+    $Clave = isset($_POST['clave']) ? $_POST['clave'] : '';
 
     if (strlen($Apellido) < 2) {
         $Mensaje .= 'Debes ingresar un apellido con al menos 2 caracteres. <br />';
@@ -222,11 +222,8 @@ function Validar_Datos_Chofer($vConexion)
 
     if ($Usuario === '') {
         $Mensaje .= 'Debes ingresar el usuario. <br />';
-    } else {
-        $Usuario = strtolower($Usuario);
-        if (ExisteUsuario($Usuario, $vConexion)) {
-            $Mensaje .= 'El usuario ingresado ya existe. <br />';
-        }
+    } elseif (ExisteUsuario($Usuario, $vConexion)) {
+        $Mensaje .= 'El usuario ingresado ya existe. <br />';
     }
 
     if ($Clave === '') {
@@ -235,21 +232,13 @@ function Validar_Datos_Chofer($vConexion)
         $Mensaje .= 'La clave debe tener al menos 5 caracteres. <br />';
     }
 
-    foreach ($_POST as $Id => $Valor) {
-        $_POST[$Id] = trim(strip_tags($Valor));
-    }
-
-    if (!empty($Usuario)) {
-        $_POST['usuario'] = $Usuario;
-    }
-
     return $Mensaje;
 }
 
 /**
  * Archivo: funciones/funciones.php (línea 188)
  * Propósito: Persistir en la base de datos un nuevo chofer validado.
- * Descripción: Toma los valores saneados de $_POST, construye un INSERT sobre la tabla
+ * Descripción: Toma los valores recibidos en $_POST, construye un INSERT sobre la tabla
  * usuarios definiendo el nivel correspondiente a chofer y ejecuta la consulta; ante
  * fallas termina la ejecución para facilitar el diagnóstico.
  * Retorna: bool — Devuelve true cuando la inserción se ejecuta correctamente; en caso de
@@ -277,8 +266,8 @@ function Insertar_Chofer($vConexion)
  * Archivo: funciones/funciones.php (línea 206)
  * Propósito: Revisar que los datos del formulario de transporte sean válidos.
  * Descripción: Evalúa selección de marca, formato de modelo, año y patente; verifica que
- * la patente no esté repetida consultando la base y limpia todas las entradas de $_POST.
- * También normaliza la patente en mayúsculas y guarda el estado de disponibilidad.
+ * la patente no esté repetida consultando la base y conserva los valores tal como se
+ * enviaron desde el formulario.
  * Retorna: string — Entrega un texto con los errores encontrados; si la cadena queda
  * vacía significa que los datos superaron todas las validaciones.
  */
@@ -287,10 +276,9 @@ function Validar_Datos_Transporte($vConexion)
     $Mensaje = '';
 
     $MarcaId = isset($_POST['marca_id']) ? (int) $_POST['marca_id'] : 0;
-    $Modelo = isset($_POST['modelo']) ? trim($_POST['modelo']) : '';
-    $Anio = isset($_POST['anio']) ? trim($_POST['anio']) : '';
-    $Patente = isset($_POST['patente']) ? strtoupper(trim($_POST['patente'])) : '';
-    $Disponible = !empty($_POST['disponible']) ? 1 : 0;
+    $Modelo = isset($_POST['modelo']) ? $_POST['modelo'] : '';
+    $Anio = isset($_POST['anio']) ? $_POST['anio'] : '';
+    $Patente = isset($_POST['patente']) ? $_POST['patente'] : '';
 
     if ($MarcaId == 0) {
         $Mensaje .= 'Debes seleccionar una marca. <br />';
@@ -314,23 +302,13 @@ function Validar_Datos_Transporte($vConexion)
         $Mensaje .= 'La patente ingresada ya se encuentra registrada. <br />';
     }
 
-    foreach ($_POST as $Id => $Valor) {
-        $_POST[$Id] = trim(strip_tags($Valor));
-    }
-
-    if ($Patente !== '') {
-        $_POST['patente'] = $Patente;
-    }
-
-    $_POST['disponible'] = $Disponible;
-
     return $Mensaje;
 }
 
 /**
  * Archivo: funciones/funciones.php (línea 251)
  * Propósito: Guardar un transporte nuevo junto a sus atributos principales.
- * Descripción: Recupera los valores previamente sanitizados, arma la sentencia INSERT y
+ * Descripción: Recupera los valores enviados por el formulario, arma la sentencia INSERT y
  * se encarga de transformar el año a NULL cuando no se indicó. Ejecuta la consulta y
  * detiene el script si ocurre un error para evitar estados inconsistentes.
  * Retorna: bool — Devuelve true al completar el alta correctamente, lo que permite a la
@@ -364,9 +342,8 @@ function Insertar_Transporte($vConexion)
  * Archivo: funciones/funciones.php (línea 275)
  * Propósito: Verificar que la información de un viaje programado sea coherente.
  * Descripción: Controla que el chofer, transporte y destino existan en la base utilizando
- * funciones de existencia; valida el formato de fecha convirtiéndolo a YYYY-mm-dd,
- * normaliza importes y porcentajes y limpia todas las entradas del formulario para evitar
- * inyecciones.
+ * funciones de existencia; valida el formato de fecha convirtiéndolo a YYYY-mm-dd y
+ * normaliza importes y porcentajes usando los mismos datos ingresados por el usuario.
  * Retorna: string — Devuelve una cadena con todos los mensajes de error encontrados; si
  * no se detecta nada, retorna una cadena vacía indicando que se puede grabar el viaje.
  */
@@ -377,9 +354,9 @@ function Validar_Datos_Viaje($vConexion)
     $Chofer = isset($_POST['chofer_id']) ? (int) $_POST['chofer_id'] : 0;
     $Transporte = isset($_POST['transporte_id']) ? (int) $_POST['transporte_id'] : 0;
     $Destino = isset($_POST['destino_id']) ? (int) $_POST['destino_id'] : 0;
-    $Fecha = isset($_POST['fecha_programada']) ? trim($_POST['fecha_programada']) : '';
-    $Costo = isset($_POST['costo']) ? trim($_POST['costo']) : '';
-    $Porcentaje = isset($_POST['porcentaje_chofer']) ? trim($_POST['porcentaje_chofer']) : '';
+    $Fecha = isset($_POST['fecha_programada']) ? $_POST['fecha_programada'] : '';
+    $Costo = isset($_POST['costo']) ? $_POST['costo'] : '';
+    $Porcentaje = isset($_POST['porcentaje_chofer']) ? $_POST['porcentaje_chofer'] : '';
 
     if ($Chofer == 0) {
         $Mensaje .= 'Debes seleccionar un chofer. <br />';
@@ -438,10 +415,6 @@ function Validar_Datos_Viaje($vConexion)
         if ($Valor < 0 || $Valor > 100) {
             $Mensaje .= 'El porcentaje debe estar entre 0 y 100. <br />';
         }
-    }
-
-    foreach ($_POST as $Id => $Valor) {
-        $_POST[$Id] = trim(strip_tags($Valor));
     }
 
     return $Mensaje;
