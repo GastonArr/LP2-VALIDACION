@@ -548,6 +548,7 @@ function ExisteUsuario($Usuario, $vConexion)
 
     $Existe = mysqli_fetch_array($rs);
 
+    // TODO ESTA LINEA COMPRUEBA DUPLICADOS: SI LA CONSULTA DEVUELVE DATOS, INDICA QUE EL USUARIO YA EXISTE Y RETORNA TRUE PARA BLOQUEAR UNA CREACION REPETIDA
     return !empty($Existe);
 }
 
@@ -570,6 +571,7 @@ function ExisteDNI($Dni, $vConexion)
 
     $Existe = mysqli_fetch_array($rs);
 
+    // TODO ESTA VALIDACION EVITA DUPLICADOS DE DNI: AL DETECTAR UNA FILA RESULTANTE SABEMOS QUE EL DOCUMENTO YA ESTA CARGADO Y RESPONDEMOS TRUE PARA IMPEDIR REGISTROS REPETIDOS
     return !empty($Existe);
 }
 
@@ -592,6 +594,7 @@ function ExistePatente($Patente, $vConexion)
 
     $Existe = mysqli_fetch_array($rs);
 
+    // TODO ACA SE CONTROLAN PATENTES DUPLICADAS: SI EXISTE UN TRANSPORTE CON LA MISMA PATENTE SE DEVUELVE TRUE PARA EVITAR CARGAR UN VEHICULO REPETIDO
     return !empty($Existe);
 }
 
