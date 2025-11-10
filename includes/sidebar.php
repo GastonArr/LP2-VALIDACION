@@ -1,39 +1,15 @@
 <?php
-// Inicializamos la variable que identifica la página actual
-$currentPage = '';
-// Si desde el archivo principal se definió $activePage la usamos para resaltar el menú
-if (isset($activePage)) {
-    $currentPage = $activePage;
-}
+// Guardamos la página recibida desde el archivo que incluye el menú
+$currentPage = isset($activePage) ? $activePage : '';
 
-// Obtenemos el nivel del usuario logueado para definir qué opciones mostrar
+// Recuperamos el nivel almacenado en la sesión y lo comparamos como hacía la profe
 $nivelSesion = !empty($_SESSION['Usuario_Nivel']) ? (int) $_SESSION['Usuario_Nivel'] : 0;
-// Los niveles 1 y 2 pueden gestionar transportes
-$mostrarTransportes = ($nivelSesion === 1 || $nivelSesion === 2);
-// Solo el nivel 1 (administrador) puede gestionar choferes
-$mostrarChoferes = ($nivelSesion === 1);
-// Los niveles 1 y 2 pueden cargar viajes
-$mostrarCargaViajes = ($nivelSesion === 1 || $nivelSesion === 2);
+// En las clases el nivel 1 representaba al administrador
+$esAdministrador = ($nivelSesion === 1);
 
-// Creamos un listado de páginas relacionadas con la sección transportes
-$transportNavPages = array();
-if ($mostrarTransportes) {
-    $transportNavPages[] = 'camion_carga';
-}
-if ($mostrarChoferes) {
-    $transportNavPages[] = 'choferes';
-}
-
-// Sección de páginas relacionadas con viajes
-$viajesNavPages = array('viajes_listado');
-if ($mostrarCargaViajes) {
-    $viajesNavPages[] = 'viaje_carga';
-}
-
-// Determinamos si debemos mostrar expandido el menú de transportes
-$transportNavAbierto = in_array($currentPage, $transportNavPages, true);
-// Determinamos si debemos mostrar expandido el menú de viajes
-$viajesNavAbierto = in_array($currentPage, $viajesNavPages, true);
+// En el material de ejemplo se abrían los submenús comparando directamente el nombre de la página
+$transportNavAbierto = $esAdministrador && ($currentPage === 'camion_carga' || $currentPage === 'choferes');
+$viajesNavAbierto = ($currentPage === 'viaje_carga' || $currentPage === 'viajes_listado');
 ?>
 <!-- Menú lateral con las opciones disponibles para el usuario -->
 <aside id="sidebar" class="sidebar">
@@ -47,8 +23,8 @@ $viajesNavAbierto = in_array($currentPage, $viajesNavPages, true);
             </a>
         </li>
 
-        <!-- Sección de transportes visible según el nivel del usuario -->
-        <?php if ($mostrarTransportes || $mostrarChoferes): ?>
+        <!-- Sección de transportes solo disponible para el administrador (nivel 1) -->
+        <?php if ($esAdministrador): ?>
             <li class="nav-item">
                 <!-- Cabecera que abre o cierra el submenú de transportes -->
                 <a class="nav-link <?php echo $transportNavAbierto ? '' : 'collapsed'; ?>" data-bs-target="#transportes-nav" data-bs-toggle="collapse" href="#">
@@ -56,22 +32,18 @@ $viajesNavAbierto = in_array($currentPage, $viajesNavPages, true);
                 </a>
                 <!-- Submenú de transportes con sus opciones -->
                 <ul id="transportes-nav" class="nav-content collapse <?php echo $transportNavAbierto ? 'show' : ''; ?>" data-bs-parent="#sidebar-nav">
-                    <?php if ($mostrarTransportes): ?>
-                        <li>
-                            <!-- Enlace para registrar un nuevo transporte -->
-                            <a href="camion_carga.php" class="<?php echo $currentPage === 'camion_carga' ? 'active' : ''; ?>">
-                                <i class="bi bi-file-earmark-plus"></i><span>Cargar nuevo transporte</span>
-                            </a>
-                        </li>
-                    <?php endif; ?>
-                    <?php if ($mostrarChoferes): ?>
-                        <li>
-                            <!-- Enlace para registrar un nuevo chofer -->
-                            <a href="chofer_carga.php" class="<?php echo $currentPage === 'choferes' ? 'active' : ''; ?>">
-                                <i class="bi bi-person-plus"></i><span>Cargar nuevo chofer</span>
-                            </a>
-                        </li>
-                    <?php endif; ?>
+                    <li>
+                        <!-- Enlace para registrar un nuevo transporte, disponible solo para el administrador -->
+                        <a href="camion_carga.php" class="<?php echo $currentPage === 'camion_carga' ? 'active' : ''; ?>">
+                            <i class="bi bi-file-earmark-plus"></i><span>Cargar nuevo transporte</span>
+                        </a>
+                    </li>
+                    <li>
+                        <!-- Enlace para registrar un nuevo chofer tal como se mostró en clase -->
+                        <a href="chofer_carga.php" class="<?php echo $currentPage === 'choferes' ? 'active' : ''; ?>">
+                            <i class="bi bi-person-plus"></i><span>Cargar nuevo chofer</span>
+                        </a>
+                    </li>
                 </ul>
             </li>
         <?php endif; ?>
@@ -84,9 +56,9 @@ $viajesNavAbierto = in_array($currentPage, $viajesNavPages, true);
             </a>
             <!-- Submenú con las acciones relacionadas a los viajes -->
             <ul id="viajes-nav" class="nav-content collapse <?php echo $viajesNavAbierto ? 'show' : ''; ?>" data-bs-parent="#sidebar-nav">
-                <?php if ($mostrarCargaViajes): ?>
+                <?php if ($esAdministrador): ?>
                     <li>
-                        <!-- Enlace para registrar un nuevo viaje -->
+                        <!-- Enlace para registrar un nuevo viaje, reservado al administrador como en el ejemplo -->
                         <a href="viaje_carga.php" class="<?php echo $currentPage === 'viaje_carga' ? 'active' : ''; ?>">
                             <i class="bi bi-file-earmark-plus"></i><span>Cargar nuevo</span>
                         </a>

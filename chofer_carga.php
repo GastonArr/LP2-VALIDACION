@@ -15,11 +15,11 @@ if (empty($_SESSION['Usuario_ID'])) {
     exit;
 }
 
-// Solo los usuarios con nivel 1 pueden ingresar a esta pantalla de registro de choferes
-if (empty($_SESSION['Usuario_Nivel']) || (int) $_SESSION['Usuario_Nivel'] !== 1) {
-    // En caso contrario los enviamos al panel principal
+// En clase la profe limitó el alta de usuarios a nivel 1, replicamos la misma idea para choferes
+if (empty($_SESSION['Usuario_Nivel']) || (int) $_SESSION['Usuario_Nivel'] > 1) {
+    // Si el nivel es superior lo devolvemos al panel principal
     header('Location: index.php');
-    // Terminamos la ejecución para evitar que se renderice el resto del contenido
+    // Cortamos la ejecución para que no pueda ver la pantalla restringida
     exit;
 }
 

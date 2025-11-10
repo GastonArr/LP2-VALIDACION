@@ -15,9 +15,9 @@ if (empty($_SESSION['Usuario_ID'])) {
     exit;
 }
 
-// Los usuarios de nivel 3 no pueden registrar viajes, los enviamos al listado
-if (!empty($_SESSION['Usuario_Nivel']) && (int) $_SESSION['Usuario_Nivel'] === 3) {
-    // Redirigimos al listado de viajes para que solo puedan visualizar
+// Igual que en la carpeta de ejemplos, solo el administrador (nivel 1) carga registros desde el panel
+if (empty($_SESSION['Usuario_Nivel']) || (int) $_SESSION['Usuario_Nivel'] > 1) {
+    // Redirigimos al listado de viajes para quienes no tienen permiso de carga
     header('Location: viajes_listado.php');
     // Detenemos la ejecución para evitar que puedan cargar viajes
     exit;
