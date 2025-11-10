@@ -1,9 +1,29 @@
 <?php
-$imagenPerfil = $_SESSION['Usuario_Img'];
-$nombreSesion = $_SESSION['Usuario_Nombre'];
-$apellidoSesion = $_SESSION['Usuario_Apellido'];
-$nivelNombreSesion = $_SESSION['Usuario_NombreNivel'];
-$nombreCompletoSesion = $nombreSesion . ' ' . $apellidoSesion;
+// Definimos la imagen de perfil por defecto
+$imagenPerfil = 'profile-img.jpg';
+// Si en la sesión hay una imagen personalizada la utilizamos
+if (!empty($_SESSION['Usuario_Img'])) {
+    $imagenPerfil = $_SESSION['Usuario_Img'];
+}
+
+// Recuperamos el apellido del usuario autenticado
+$apellidoSesion = !empty($_SESSION['Usuario_Apellido']) ? $_SESSION['Usuario_Apellido'] : '';
+// Recuperamos el nombre del usuario autenticado
+$nombreSesion = !empty($_SESSION['Usuario_Nombre']) ? $_SESSION['Usuario_Nombre'] : '';
+
+// Construimos el nombre completo mezclando apellido y nombre según estén cargados
+if ($apellidoSesion !== '' && $nombreSesion !== '') {
+    $nombreCompletoSesion = $apellidoSesion . ', ' . $nombreSesion;
+} elseif ($apellidoSesion !== '') {
+    $nombreCompletoSesion = $apellidoSesion;
+} elseif ($nombreSesion !== '') {
+    $nombreCompletoSesion = $nombreSesion;
+} else {
+    $nombreCompletoSesion = 'Usuario';
+}
+
+// Obtenemos la denominación del nivel del usuario para mostrarlo en el menú
+$nivelNombreSesion = !empty($_SESSION['Usuario_NombreNivel']) ? $_SESSION['Usuario_NombreNivel'] : 'Usuario';
 ?>
 <!-- Barra superior fija con accesos rápidos y perfil del usuario -->
 <header id="header" class="header fixed-top d-flex align-items-center">
@@ -38,7 +58,7 @@ $nombreCompletoSesion = $nombreSesion . ' ' . $apellidoSesion;
                     <!-- Encabezado del menú con el nombre y el rol -->
                     <li class="dropdown-header">
                         <h6><?php echo $nombreCompletoSesion; ?></h6>
-                        <span><?php echo strtoupper($nivelNombreSesion); ?></span>
+                        <span><?php echo $nivelNombreSesion; ?></span>
                     </li>
                     <li>
                         <hr class="dropdown-divider">

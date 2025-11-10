@@ -8,7 +8,7 @@ require_once 'funciones/conexion.php';
 require_once 'funciones/funciones.php';
 
 // Si no hay un usuario autenticado, redirigimos al formulario de login
-if (empty($_SESSION['Usuario_Nombre'])) {
+if (empty($_SESSION['Usuario_ID'])) {
     // Redirigimos utilizando cabeceras HTTP al formulario de autenticación
     header('Location: login.php');
     // Finalizamos la ejecución del script para proteger la página
@@ -116,7 +116,7 @@ require_once 'includes/sidebar.php';
                             </div>
                         <?php } ?>
                         <!-- Formulario para crear un nuevo viaje -->
-                        <form class="row g-3" method="post" action="">
+                        <form class="row g-3" method="post" action="" novalidate>
                             <!-- Selector de chofer -->
                             <div class="col-12">
                                 <!-- Etiqueta para el campo del chofer -->

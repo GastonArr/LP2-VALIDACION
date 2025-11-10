@@ -8,7 +8,7 @@ require_once 'funciones/conexion.php';
 require_once 'funciones/funciones.php';
 
 // Si la sesión no tiene un identificador de usuario significa que no inició sesión
-if (empty($_SESSION['Usuario_Nombre'])) {
+if (empty($_SESSION['Usuario_ID'])) {
     // Redirigimos a la página de login para forzar la autenticación
     header('Location: login.php');
     // Interrumpimos el script porque el usuario no tiene acceso
@@ -106,7 +106,7 @@ require_once 'includes/sidebar.php';
                             </div>
                         <?php } ?>
                         <!-- Formulario de alta de chofer -->
-                        <form class="row g-3" method="post" action="">
+                        <form class="row g-3" method="post" action="" novalidate>
                             <!-- Campo para el apellido del chofer -->
                             <div class="col-12">
                                 <!-- Etiqueta asociada al input de apellido -->

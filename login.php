@@ -9,9 +9,8 @@ require_once 'funciones/funciones.php';
 
 // Si el usuario ya tiene una sesión activa lo redirigimos directamente al panel principal
 if (!empty($_SESSION['Usuario_ID'])) {
-    // Enviamos al usuario al panel principal como se vio en clase
-    header('Location: index.php');
-    exit;
+    // Usamos la función de ayuda para redirigir al dashboard
+    Redireccionar('index.php');
 }
 
 // Abrimos la conexión a la base de datos para validar las credenciales
@@ -31,19 +30,26 @@ if (!empty($_POST['BotonLogin'])) {
         // Consultamos en la base de datos si las credenciales son válidas
         $UsuarioLogueado = DatosLogin($_POST['usuario'], $_POST['clave'], $MiConexion);
 
-        // Si encontramos un registro procesamos el acceso igual que en los ejemplos
+        // Si encontramos un registro procesamos el acceso
         if (!empty($UsuarioLogueado)) {
-            $_SESSION['Usuario_ID'] = $UsuarioLogueado['ID'];
-            $_SESSION['Usuario_Nombre'] = $UsuarioLogueado['NOMBRE'];
-            $_SESSION['Usuario_Apellido'] = $UsuarioLogueado['APELLIDO'];
-            $_SESSION['Usuario_Nivel'] = $UsuarioLogueado['NIVEL'];
-            $_SESSION['Usuario_NombreNivel'] = $UsuarioLogueado['NIVEL_NOMBRE'];
-            $_SESSION['Usuario_Img'] = $UsuarioLogueado['IMG'];
-            $_SESSION['Usuario_Saludo'] = $UsuarioLogueado['SALUDO'];
+            // TODO ESTE CHEQUEO REVISA EL ESTADO ACTIVO: SI LA BANDERA ES CERO SE IMPIDE EL ACCESO AUNQUE LAS CREDENCIALES SEAN VALIDAS
+            if ($UsuarioLogueado['ACTIVO'] == 0) {
+                $Mensaje = 'Ud. no se encuentra activo en el sistema.';
+            } else {
+                // Guardamos todos los datos relevantes en la sesión para reutilizarlos
+                $_SESSION['Usuario_ID'] = $UsuarioLogueado['ID'];
+                $_SESSION['Usuario_Nombre'] = $UsuarioLogueado['NOMBRE'];
+                $_SESSION['Usuario_Apellido'] = $UsuarioLogueado['APELLIDO'];
+                $_SESSION['Usuario_Usuario'] = $UsuarioLogueado['USUARIO'];
+                $_SESSION['Usuario_Nivel'] = $UsuarioLogueado['NIVEL'];
+                $_SESSION['Usuario_NombreNivel'] = $UsuarioLogueado['NIVEL_NOMBRE'];
+                $_SESSION['Usuario_Img'] = $UsuarioLogueado['IMG'];
+                $_SESSION['Usuario_Saludo'] = $UsuarioLogueado['SALUDO'];
+                $_SESSION['Usuario_Activo'] = $UsuarioLogueado['ACTIVO'];
 
-            // Redirigimos al usuario al panel una vez autenticado
-            header('Location: index.php');
-            exit;
+                // Redirigimos al usuario al panel una vez autenticado
+                Redireccionar('index.php');
+            }
         } else {
             // Si las credenciales no son válidas informamos el error
             $Mensaje = 'Datos incorrectos, ingresa nuevamente.';
@@ -104,7 +110,7 @@ require_once 'includes/header.php';
                                     </div>
                                 <?php endif; ?>
                                 <!-- Formulario de inicio de sesión -->
-                                <form class="row g-3" method="post" action="">
+                                <form class="row g-3" method="post" action="" novalidate>
                                     <!-- Campo para el nombre de usuario -->
                                     <div class="col-12">
                                         <!-- Etiqueta que identifica el input -->
