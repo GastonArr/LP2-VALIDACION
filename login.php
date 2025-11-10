@@ -37,7 +37,7 @@ if (!empty($_POST['BotonLogin'])) {
 
         // Si encontramos un registro procesamos el acceso
         if (!empty($UsuarioLogueado)) {
-            // Verificamos que el usuario se encuentre activo
+            // TODO ESTE CHEQUEO REVISA EL ESTADO ACTIVO: SI LA BANDERA ES CERO SE IMPIDE EL ACCESO AUNQUE LAS CREDENCIALES SEAN VALIDAS
             if (isset($UsuarioLogueado['ACTIVO']) && $UsuarioLogueado['ACTIVO'] == 0) {
                 $Mensaje = 'Ud. no se encuentra activo en el sistema.';
             } else {
