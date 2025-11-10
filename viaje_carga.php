@@ -168,7 +168,7 @@ require_once 'includes/sidebar.php';
                                 <!-- Etiqueta de la fecha -->
                                 <label for="fecha_programada" class="form-label">Fecha programada (*)</label>
                                 <!-- Input de texto que conserva el valor ingresado -->
-                                <input type="text" class="form-control" id="fecha_programada" name="fecha_programada" placeholder="dd/mm/aaaa" value="<?php echo !empty($_POST['fecha_programada']) ? htmlspecialchars($_POST['fecha_programada']) : ''; ?>" required>
+                                <input type="text" class="form-control" id="fecha_programada" name="fecha_programada" placeholder="dd/mm/aaaa" value="<?php echo !empty($_POST['fecha_programada']) ? $_POST['fecha_programada'] : ''; ?>" required>
                             </div>
                             <!-- Selector del destino del viaje -->
                             <div class="col-12">
@@ -196,14 +196,14 @@ require_once 'includes/sidebar.php';
                                 <!-- Etiqueta que describe el costo -->
                                 <label for="costo" class="form-label">Costo (*)</label>
                                 <!-- Input que almacena el costo y conserva el valor ingresado -->
-                                <input type="text" class="form-control" id="costo" name="costo" value="<?php echo !empty($_POST['costo']) ? htmlspecialchars($_POST['costo']) : ''; ?>" required>
+                                <input type="text" class="form-control" id="costo" name="costo" value="<?php echo !empty($_POST['costo']) ? $_POST['costo'] : ''; ?>" required>
                             </div>
                             <!-- Campo para el porcentaje asignado al chofer -->
                             <div class="col-6">
                                 <!-- Etiqueta del porcentaje -->
                                 <label for="porcentaje_chofer" class="form-label">Porcentaje chofer (*)</label>
                                 <!-- Input numérico limitado entre 0 y 100 -->
-                                <input type="number" class="form-control" id="porcentaje_chofer" name="porcentaje_chofer" min="0" max="100" value="<?php echo !empty($_POST['porcentaje_chofer']) ? htmlspecialchars($_POST['porcentaje_chofer']) : ''; ?>" required>
+                                <input type="number" class="form-control" id="porcentaje_chofer" name="porcentaje_chofer" min="0" max="100" value="<?php echo !empty($_POST['porcentaje_chofer']) ? $_POST['porcentaje_chofer'] : ''; ?>" required>
                             </div>
                             <!-- Sección de acciones del formulario -->
                             <div class="text-center">

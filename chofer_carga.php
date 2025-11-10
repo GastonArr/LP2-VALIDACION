@@ -112,28 +112,28 @@ require_once 'includes/sidebar.php';
                                 <!-- Etiqueta asociada al input de apellido -->
                                 <label for="apellido" class="form-label">Apellido (*)</label>
                                 <!-- Input que conserva el valor ingresado previamente -->
-                                <input type="text" class="form-control" id="apellido" name="apellido" value="<?php echo !empty($_POST['apellido']) ? htmlspecialchars($_POST['apellido']) : ''; ?>" required>
+                                <input type="text" class="form-control" id="apellido" name="apellido" value="<?php echo !empty($_POST['apellido']) ? $_POST['apellido'] : ''; ?>" required>
                             </div>
                             <!-- Campo para el nombre del chofer -->
                             <div class="col-12">
                                 <!-- Etiqueta para el campo nombre -->
                                 <label for="nombre" class="form-label">Nombre (*)</label>
                                 <!-- Input que persiste el valor tras la validación -->
-                                <input type="text" class="form-control" id="nombre" name="nombre" value="<?php echo !empty($_POST['nombre']) ? htmlspecialchars($_POST['nombre']) : ''; ?>" required>
+                                <input type="text" class="form-control" id="nombre" name="nombre" value="<?php echo !empty($_POST['nombre']) ? $_POST['nombre'] : ''; ?>" required>
                             </div>
                             <!-- Campo para el DNI del chofer -->
                             <div class="col-12">
                                 <!-- Etiqueta descriptiva del DNI -->
                                 <label for="dni" class="form-label">DNI (*)</label>
                                 <!-- Input restringido a texto que mantiene el dato ingresado -->
-                                <input type="text" class="form-control" id="dni" name="dni" value="<?php echo !empty($_POST['dni']) ? htmlspecialchars($_POST['dni']) : ''; ?>" required>
+                                <input type="text" class="form-control" id="dni" name="dni" value="<?php echo !empty($_POST['dni']) ? $_POST['dni'] : ''; ?>" required>
                             </div>
                             <!-- Campo para el nombre de usuario del chofer -->
                             <div class="col-12">
                                 <!-- Etiqueta del campo usuario -->
                                 <label for="usuario" class="form-label">Usuario (*)</label>
                                 <!-- Input con persistencia del valor de usuario -->
-                                <input type="text" class="form-control" id="usuario" name="usuario" value="<?php echo !empty($_POST['usuario']) ? htmlspecialchars($_POST['usuario']) : ''; ?>" required>
+                                <input type="text" class="form-control" id="usuario" name="usuario" value="<?php echo !empty($_POST['usuario']) ? $_POST['usuario'] : ''; ?>" required>
                             </div>
                             <!-- Campo para la contraseña de acceso -->
                             <div class="col-12">
