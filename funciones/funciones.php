@@ -6,12 +6,30 @@ if (!isset($_SESSION)) {
     session_start();
 }
 
+/**
+ * Archivo: funciones/funciones.php (línea 12)
+ * Propósito: Enviar al navegador una redirección controlada.
+ * Descripción: Usa la cabecera HTTP Location para llevar al usuario a la ruta indicada y
+ * termina el script inmediatamente, evitando que se siga ejecutando código posterior.
+ * Retorna: void — No devuelve valor porque su responsabilidad es cambiar el flujo de
+ * ejecución mediante la redirección y el exit.
+ */
 function Redireccionar($Ruta)
 {
     header('Location: ' . $Ruta);
     exit;
 }
 
+/**
+ * Archivo: funciones/funciones.php (línea 21)
+ * Propósito: Validar credenciales de acceso y recuperar los datos del usuario.
+ * Descripción: Construye una consulta SELECT sobre las tablas usuarios y niveles,
+ * ejecuta la verificación en la base de datos y mapea los campos obtenidos a un arreglo
+ * asociativo que se utiliza en la sesión. Normaliza la imagen asignando un valor por
+ * defecto cuando no hay foto cargada.
+ * Retorna: array — Devuelve un arreglo con los datos del usuario autenticado; si las
+ * credenciales no son válidas, regresa un arreglo vacío para poder detectar el fallo.
+ */
 function DatosLogin($vUsuario, $vClave, $vConexion)
 {
     $Usuario = array();
@@ -44,6 +62,15 @@ function DatosLogin($vUsuario, $vClave, $vConexion)
     return $Usuario;
 }
 
+/**
+ * Archivo: funciones/funciones.php (línea 47)
+ * Propósito: Listar los choferes activos disponibles en el sistema.
+ * Descripción: Ejecuta una consulta filtrando usuarios de nivel 3 (rol chofer) y activos,
+ * recorre el resultado y arma un arreglo indexado con apellido, nombre y DNI para su uso
+ * en combos o listados.
+ * Retorna: array — Entrega un arreglo con los choferes obtenidos; si no hay registros,
+ * devuelve un arreglo vacío para que la interfaz pueda manejar esa situación.
+ */
 function Listar_Choferes($vConexion)
 {
     $Listado = array();
@@ -69,6 +96,15 @@ function Listar_Choferes($vConexion)
     return $Listado;
 }
 
+/**
+ * Archivo: funciones/funciones.php (línea 72)
+ * Propósito: Obtener los transportes disponibles asociados a sus marcas.
+ * Descripción: Realiza un JOIN entre transportes y marcas, aplica el filtro de
+ * disponibilidad y prepara un arreglo con los datos principales (marca, modelo y
+ * patente) para mostrarlos al usuario al momento de asignar un viaje.
+ * Retorna: array — Devuelve el listado de transportes listos para ser utilizados; un
+ * arreglo vacío indica que no hay vehículos disponibles.
+ */
 function Listar_Transportes($vConexion)
 {
     $Listado = array();
@@ -95,6 +131,14 @@ function Listar_Transportes($vConexion)
     return $Listado;
 }
 
+/**
+ * Archivo: funciones/funciones.php (línea 98)
+ * Propósito: Recuperar todas las marcas de transporte cargadas.
+ * Descripción: Ejecuta una consulta simple sobre la tabla marcas ordenando por nombre y
+ * construye un arreglo con los identificadores y denominaciones para poblar selectores.
+ * Retorna: array — Regresa el listado de marcas; un arreglo vacío indica que aún no se
+ * registraron marcas.
+ */
 function Listar_Marcas($vConexion)
 {
     $Listado = array();
@@ -114,6 +158,14 @@ function Listar_Marcas($vConexion)
     return $Listado;
 }
 
+/**
+ * Archivo: funciones/funciones.php (línea 117)
+ * Propósito: Listar los destinos configurados en el sistema.
+ * Descripción: Consulta la tabla destinos, ordena el resultado alfabéticamente y arma un
+ * arreglo con pares id/denominación que luego se utilizan al registrar viajes.
+ * Retorna: array — Devuelve todos los destinos encontrados; un arreglo vacío señala que
+ * todavía no existen destinos cargados.
+ */
 function Listar_Destinos($vConexion)
 {
     $Listado = array();
@@ -133,6 +185,15 @@ function Listar_Destinos($vConexion)
     return $Listado;
 }
 
+/**
+ * Archivo: funciones/funciones.php (línea 136)
+ * Propósito: Validar y sanitizar la información ingresada al crear un chofer.
+ * Descripción: Obtiene los datos enviados por POST, verifica longitud de textos,
+ * estructura del DNI y unicidad de usuario/DNI consultando funciones auxiliares. Además
+ * limpia el arreglo $_POST para evitar código malicioso y normaliza el nombre de usuario.
+ * Retorna: string — Devuelve un mensaje concatenado con todos los errores detectados; si
+ * es una cadena vacía significa que los datos están listos para guardarse.
+ */
 function Validar_Datos_Chofer($vConexion)
 {
     $Mensaje = '';
@@ -185,6 +246,15 @@ function Validar_Datos_Chofer($vConexion)
     return $Mensaje;
 }
 
+/**
+ * Archivo: funciones/funciones.php (línea 188)
+ * Propósito: Persistir en la base de datos un nuevo chofer validado.
+ * Descripción: Toma los valores saneados de $_POST, construye un INSERT sobre la tabla
+ * usuarios definiendo el nivel correspondiente a chofer y ejecuta la consulta; ante
+ * fallas termina la ejecución para facilitar el diagnóstico.
+ * Retorna: bool — Devuelve true cuando la inserción se ejecuta correctamente; en caso de
+ * error, la función aborta mediante die, por lo que no se retorna false explícitamente.
+ */
 function Insertar_Chofer($vConexion)
 {
     $Apellido = isset($_POST['apellido']) ? $_POST['apellido'] : '';
@@ -203,6 +273,15 @@ function Insertar_Chofer($vConexion)
     return true;
 }
 
+/**
+ * Archivo: funciones/funciones.php (línea 206)
+ * Propósito: Revisar que los datos del formulario de transporte sean válidos.
+ * Descripción: Evalúa selección de marca, formato de modelo, año y patente; verifica que
+ * la patente no esté repetida consultando la base y limpia todas las entradas de $_POST.
+ * También normaliza la patente en mayúsculas y guarda el estado de disponibilidad.
+ * Retorna: string — Entrega un texto con los errores encontrados; si la cadena queda
+ * vacía significa que los datos superaron todas las validaciones.
+ */
 function Validar_Datos_Transporte($vConexion)
 {
     $Mensaje = '';
@@ -248,6 +327,15 @@ function Validar_Datos_Transporte($vConexion)
     return $Mensaje;
 }
 
+/**
+ * Archivo: funciones/funciones.php (línea 251)
+ * Propósito: Guardar un transporte nuevo junto a sus atributos principales.
+ * Descripción: Recupera los valores previamente sanitizados, arma la sentencia INSERT y
+ * se encarga de transformar el año a NULL cuando no se indicó. Ejecuta la consulta y
+ * detiene el script si ocurre un error para evitar estados inconsistentes.
+ * Retorna: bool — Devuelve true al completar el alta correctamente, lo que permite a la
+ * lógica llamante saber que puede continuar con normalidad.
+ */
 function Insertar_Transporte($vConexion)
 {
     $Marca = isset($_POST['marca_id']) ? (int) $_POST['marca_id'] : 0;
@@ -272,6 +360,16 @@ function Insertar_Transporte($vConexion)
     return true;
 }
 
+/**
+ * Archivo: funciones/funciones.php (línea 275)
+ * Propósito: Verificar que la información de un viaje programado sea coherente.
+ * Descripción: Controla que el chofer, transporte y destino existan en la base utilizando
+ * funciones de existencia; valida el formato de fecha convirtiéndolo a YYYY-mm-dd,
+ * normaliza importes y porcentajes y limpia todas las entradas del formulario para evitar
+ * inyecciones.
+ * Retorna: string — Devuelve una cadena con todos los mensajes de error encontrados; si
+ * no se detecta nada, retorna una cadena vacía indicando que se puede grabar el viaje.
+ */
 function Validar_Datos_Viaje($vConexion)
 {
     $Mensaje = '';
@@ -349,6 +447,16 @@ function Validar_Datos_Viaje($vConexion)
     return $Mensaje;
 }
 
+/**
+ * Archivo: funciones/funciones.php (línea 352)
+ * Propósito: Registrar en la base un nuevo viaje listo para ejecutarse.
+ * Descripción: Lee los identificadores, fecha normalizada y valores económicos desde
+ * $_POST, arma la sentencia INSERT y también guarda quién creó el registro utilizando la
+ * sesión. Si la ejecución del SQL falla, aborta el proceso para evitar continuar con un
+ * estado inconsistente.
+ * Retorna: bool — Devuelve true cuando el registro se inserta con éxito, lo que confirma
+ * a la capa superior que el viaje quedó guardado.
+ */
 function Insertar_Viaje($vConexion)
 {
     $Chofer = isset($_POST['chofer_id']) ? (int) $_POST['chofer_id'] : 0;
@@ -369,6 +477,15 @@ function Insertar_Viaje($vConexion)
     return true;
 }
 
+/**
+ * Archivo: funciones/funciones.php (línea 372)
+ * Propósito: Generar un informe con los viajes programados y su información relacionada.
+ * Descripción: Construye una consulta que vincula viajes con usuarios, transportes,
+ * marcas y destinos. Permite filtrar por un chofer específico y devuelve todos los datos
+ * relevantes (fecha, destino, costos, vehículo) para mostrarlos en tablas o reportes.
+ * Retorna: array — Devuelve un arreglo indexado con cada viaje como elemento; un arreglo
+ * vacío indica que no existen registros que cumplan los filtros aplicados.
+ */
 function Listar_Viajes($vConexion, $ChoferId = null)
 {
     $Listado = array();
@@ -411,6 +528,15 @@ function Listar_Viajes($vConexion, $ChoferId = null)
     return $Listado;
 }
 
+/**
+ * Archivo: funciones/funciones.php (línea 414)
+ * Propósito: Comprobar si un nombre de usuario ya está registrado.
+ * Descripción: Ejecuta una consulta SELECT sobre la tabla usuarios filtrando por el
+ * nombre recibido y analiza si existe al menos una fila. Esto ayuda a evitar duplicados
+ * al crear nuevos usuarios o choferes.
+ * Retorna: bool — Regresa true cuando encuentra un usuario coincidente; false cuando no
+ * existe o si la consulta falla.
+ */
 function ExisteUsuario($Usuario, $vConexion)
 {
     $SQL = "SELECT id FROM usuarios WHERE usuario = '" . $Usuario . "'";
@@ -425,6 +551,14 @@ function ExisteUsuario($Usuario, $vConexion)
     return !empty($Existe);
 }
 
+/**
+ * Archivo: funciones/funciones.php (línea 428)
+ * Propósito: Verificar si un número de DNI ya fue cargado previamente.
+ * Descripción: Consulta la tabla usuarios buscando coincidencias exactas de DNI y usa el
+ * resultado para impedir que se registren dos choferes con la misma identidad.
+ * Retorna: bool — Devuelve true cuando encuentra un registro con ese DNI; false si no hay
+ * coincidencias o si la consulta falla.
+ */
 function ExisteDNI($Dni, $vConexion)
 {
     $SQL = "SELECT id FROM usuarios WHERE dni = '" . $Dni . "'";
@@ -439,6 +573,14 @@ function ExisteDNI($Dni, $vConexion)
     return !empty($Existe);
 }
 
+/**
+ * Archivo: funciones/funciones.php (línea 442)
+ * Propósito: Validar que una patente no esté repetida en la flota.
+ * Descripción: Ejecuta una consulta sobre la tabla transportes filtrando la patente. El
+ * resultado se usa en la validación del formulario para impedir duplicar vehículos.
+ * Retorna: bool — Retorna true si encuentra al menos un transporte con la misma patente;
+ * false en caso contrario o si la consulta no puede ejecutarse.
+ */
 function ExistePatente($Patente, $vConexion)
 {
     $SQL = "SELECT id FROM transportes WHERE patente = '" . $Patente . "'";
@@ -453,6 +595,15 @@ function ExistePatente($Patente, $vConexion)
     return !empty($Existe);
 }
 
+/**
+ * Archivo: funciones/funciones.php (línea 456)
+ * Propósito: Confirmar que un identificador pertenezca a un chofer válido.
+ * Descripción: Busca en la tabla usuarios el ID recibido y además verifica que su nivel
+ * sea el correspondiente a chofer. Se utiliza al validar viajes para asegurar la
+ * integridad de los datos.
+ * Retorna: bool — Devuelve true si encuentra un chofer activo con ese ID; false cuando no
+ * hay coincidencias o la consulta falla.
+ */
 function ExisteChofer($ChoferId, $vConexion)
 {
     $SQL = "SELECT id FROM usuarios WHERE id = " . (int) $ChoferId . " AND id_nivel = 3";
@@ -467,6 +618,14 @@ function ExisteChofer($ChoferId, $vConexion)
     return !empty($Existe);
 }
 
+/**
+ * Archivo: funciones/funciones.php (línea 470)
+ * Propósito: Verificar la existencia de un transporte antes de relacionarlo a un viaje.
+ * Descripción: Realiza una consulta simple a la tabla transportes buscando por ID. Esta
+ * validación evita asignar viajes a registros inexistentes o eliminados.
+ * Retorna: bool — Regresa true cuando encuentra el transporte; false si no existe o la
+ * consulta devuelve error.
+ */
 function ExisteTransporte($TransporteId, $vConexion)
 {
     $SQL = "SELECT id FROM transportes WHERE id = " . (int) $TransporteId;
@@ -481,6 +640,14 @@ function ExisteTransporte($TransporteId, $vConexion)
     return !empty($Existe);
 }
 
+/**
+ * Archivo: funciones/funciones.php (línea 484)
+ * Propósito: Chequear que un destino solicitado siga disponible en la base.
+ * Descripción: Consulta la tabla destinos por ID y se utiliza durante la validación de
+ * viajes para evitar referencias a destinos eliminados o inexistentes.
+ * Retorna: bool — Devuelve true cuando el destino existe; false en caso contrario o si se
+ * produce un error al ejecutar la consulta.
+ */
 function ExisteDestino($DestinoId, $vConexion)
 {
     $SQL = "SELECT id FROM destinos WHERE id = " . (int) $DestinoId;
