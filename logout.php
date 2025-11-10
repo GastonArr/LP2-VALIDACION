@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-require_once 'funciones/conexion.php';
-require_once 'funciones/funciones.php';
+$_SESSION = array();
+session_destroy();
 
-CerrarSesionUsuario();
-Redireccionar('login.php');
+header('Location: login.php');
+exit;

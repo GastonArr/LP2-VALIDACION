@@ -16,8 +16,8 @@ function DatosLogin($vUsuario, $vClave, $vConexion)
 {
     $Usuario = array();
 
-    $SQL = "SELECT U.id, U.apellido, U.nombre, U.usuario, U.clave, U.id_nivel, U.imagen, U.activo,
-            N.denominacion AS NivelNombre
+    $SQL = "SELECT U.id AS IdUsuario, U.apellido, U.nombre, U.usuario, U.clave, U.id_nivel,
+                   U.imagen, U.activo, N.denominacion AS NombreNivel
             FROM usuarios U, niveles N
             WHERE U.id_nivel = N.id
             AND U.usuario = '$vUsuario'
@@ -27,15 +27,14 @@ function DatosLogin($vUsuario, $vClave, $vConexion)
 
     if ($rs != false) {
         $data = mysqli_fetch_array($rs);
-
         if (!empty($data)) {
-            $Usuario['ID'] = $data['id'];
+            $Usuario['ID'] = $data['IdUsuario'];
             $Usuario['APELLIDO'] = $data['apellido'];
             $Usuario['NOMBRE'] = $data['nombre'];
             $Usuario['USUARIO'] = $data['usuario'];
             $Usuario['CLAVE'] = $data['clave'];
             $Usuario['NIVEL'] = $data['id_nivel'];
-            $Usuario['NIVEL_NOMBRE'] = $data['NivelNombre'];
+            $Usuario['NIVEL_NOMBRE'] = $data['NombreNivel'];
             $Usuario['ACTIVO'] = $data['activo'];
             $Usuario['IMG'] = !empty($data['imagen']) ? $data['imagen'] : 'user.png';
             $Usuario['SALUDO'] = 'Hola';
@@ -43,108 +42,6 @@ function DatosLogin($vUsuario, $vClave, $vConexion)
     }
 
     return $Usuario;
-}
-
-function GuardarSesionUsuario($DatosUsuario)
-{
-    $_SESSION['Usuario_ID'] = !empty($DatosUsuario['ID']) ? $DatosUsuario['ID'] : 0;
-    $_SESSION['Usuario_Nombre'] = !empty($DatosUsuario['NOMBRE']) ? $DatosUsuario['NOMBRE'] : '';
-    $_SESSION['Usuario_Apellido'] = !empty($DatosUsuario['APELLIDO']) ? $DatosUsuario['APELLIDO'] : '';
-    $_SESSION['Usuario_Usuario'] = !empty($DatosUsuario['USUARIO']) ? $DatosUsuario['USUARIO'] : '';
-    $_SESSION['Usuario_Nivel'] = !empty($DatosUsuario['NIVEL']) ? $DatosUsuario['NIVEL'] : 0;
-    $_SESSION['Usuario_NombreNivel'] = !empty($DatosUsuario['NIVEL_NOMBRE']) ? $DatosUsuario['NIVEL_NOMBRE'] : '';
-    $_SESSION['Usuario_Img'] = !empty($DatosUsuario['IMG']) ? $DatosUsuario['IMG'] : 'user.png';
-    $_SESSION['Usuario_Saludo'] = !empty($DatosUsuario['SALUDO']) ? $DatosUsuario['SALUDO'] : 'Hola';
-    $_SESSION['Usuario_Activo'] = !empty($DatosUsuario['ACTIVO']) ? $DatosUsuario['ACTIVO'] : 0;
-}
-
-function CerrarSesionUsuario()
-{
-    $_SESSION = array();
-    session_destroy();
-}
-
-function ObtenerUsuarioEnSesion()
-{
-    $Usuario = array();
-
-    if (!empty($_SESSION['Usuario_ID'])) {
-        $Usuario['id'] = $_SESSION['Usuario_ID'];
-        $Usuario['apellido'] = !empty($_SESSION['Usuario_Apellido']) ? $_SESSION['Usuario_Apellido'] : '';
-        $Usuario['nombre'] = !empty($_SESSION['Usuario_Nombre']) ? $_SESSION['Usuario_Nombre'] : '';
-        $Usuario['usuario'] = !empty($_SESSION['Usuario_Usuario']) ? $_SESSION['Usuario_Usuario'] : '';
-        $Usuario['id_nivel'] = !empty($_SESSION['Usuario_Nivel']) ? $_SESSION['Usuario_Nivel'] : 0;
-        $Usuario['imagen'] = !empty($_SESSION['Usuario_Img']) ? $_SESSION['Usuario_Img'] : 'user.png';
-    }
-
-    return $Usuario;
-}
-
-function RequiereSesion()
-{
-    if (empty($_SESSION['Usuario_ID'])) {
-        Redireccionar('login.php');
-    }
-}
-
-function UsuarioEstaLogueado()
-{
-    return !empty($_SESSION['Usuario_ID']);
-}
-
-function NombreCompletoUsuario($Usuario)
-{
-    $Apellido = isset($Usuario['apellido']) ? $Usuario['apellido'] : '';
-    $Nombre = isset($Usuario['nombre']) ? $Usuario['nombre'] : '';
-
-    if ($Apellido != '' && $Nombre != '') {
-        return $Apellido . ', ' . $Nombre;
-    }
-
-    return trim($Apellido . ' ' . $Nombre);
-}
-
-function DenominacionNivel($IdNivel)
-{
-    switch ((int) $IdNivel) {
-        case 1:
-            return 'Admin';
-        case 2:
-            return 'Operador';
-        case 3:
-            return 'Chofer';
-    }
-
-    return 'Usuario';
-}
-
-function DescripcionFuncionesNivel($IdNivel)
-{
-    switch ((int) $IdNivel) {
-        case 1:
-            return 'transportes, choferes y viajes';
-        case 2:
-            return 'transportes y viajes';
-        case 3:
-            return 'el seguimiento de los viajes asignados';
-    }
-
-    return 'la información disponible en el panel';
-}
-
-function EsAdministrador()
-{
-    return !empty($_SESSION['Usuario_Nivel']) && (int) $_SESSION['Usuario_Nivel'] === 1;
-}
-
-function EsOperador()
-{
-    return !empty($_SESSION['Usuario_Nivel']) && (int) $_SESSION['Usuario_Nivel'] === 2;
-}
-
-function EsChofer()
-{
-    return !empty($_SESSION['Usuario_Nivel']) && (int) $_SESSION['Usuario_Nivel'] === 3;
 }
 
 function Listar_Choferes($vConexion)
@@ -176,11 +73,11 @@ function Listar_Transportes($vConexion)
 {
     $Listado = array();
 
-    $SQL = "SELECT t.id, m.denominacion AS marca, t.modelo, t.patente
-            FROM transportes t, marcas m
-            WHERE m.id = t.marca_id
-            AND t.disponible = 1
-            ORDER BY m.denominacion, t.modelo, t.patente";
+    $SQL = "SELECT T.id, M.denominacion AS marca, T.modelo, T.patente
+            FROM transportes T, marcas M
+            WHERE M.id = T.marca_id
+            AND T.disponible = 1
+            ORDER BY M.denominacion, T.modelo, T.patente";
 
     $rs = mysqli_query($vConexion, $SQL);
 
@@ -203,7 +100,6 @@ function Listar_Marcas($vConexion)
     $Listado = array();
 
     $SQL = "SELECT id, denominacion FROM marcas ORDER BY denominacion";
-
     $rs = mysqli_query($vConexion, $SQL);
 
     if ($rs != false) {
@@ -223,7 +119,6 @@ function Listar_Destinos($vConexion)
     $Listado = array();
 
     $SQL = "SELECT id, denominacion FROM destinos ORDER BY denominacion";
-
     $rs = mysqli_query($vConexion, $SQL);
 
     if ($rs != false) {
@@ -478,20 +373,20 @@ function Listar_Viajes($vConexion, $ChoferId = null)
 {
     $Listado = array();
 
-    $SQL = "SELECT v.id, v.fecha_programada, d.denominacion AS destino, v.costo, v.porcentaje_chofer,
-                   c.apellido AS chofer_apellido, c.nombre AS chofer_nombre, c.dni AS chofer_dni,
-                   m.denominacion AS marca, t.modelo, t.patente
-            FROM viajes v, usuarios c, transportes t, marcas m, destinos d
-            WHERE c.id = v.chofer_id
-            AND t.id = v.transporte_id
-            AND m.id = t.marca_id
-            AND d.id = v.destino_id";
+    $SQL = "SELECT V.id, V.fecha_programada, D.denominacion AS destino, V.costo, V.porcentaje_chofer,
+                   C.apellido AS chofer_apellido, C.nombre AS chofer_nombre, C.dni AS chofer_dni,
+                   M.denominacion AS marca, T.modelo, T.patente
+            FROM viajes V, usuarios C, transportes T, marcas M, destinos D
+            WHERE C.id = V.chofer_id
+            AND T.id = V.transporte_id
+            AND M.id = T.marca_id
+            AND D.id = V.destino_id";
 
     if (!empty($ChoferId)) {
-        $SQL .= " AND v.chofer_id = " . (int) $ChoferId;
+        $SQL .= " AND V.chofer_id = " . (int) $ChoferId;
     }
 
-    $SQL .= " ORDER BY v.fecha_programada, d.denominacion";
+    $SQL .= " ORDER BY V.fecha_programada, D.denominacion";
 
     $rs = mysqli_query($vConexion, $SQL);
 
