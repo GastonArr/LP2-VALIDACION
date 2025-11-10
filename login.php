@@ -23,10 +23,9 @@ $Mensaje = '';
 
 // Verificamos si se envió el formulario de ingreso
 if (!empty($_POST['BotonLogin'])) {
-    // Normalizamos el usuario recibido eliminando espacios y pasando a minúsculas
-    $usuario = !empty($_POST['usuario']) ? strtolower(trim($_POST['usuario'])) : '';
-    // Tomamos la clave ingresada eliminando espacios extremos
-    $clave = !empty($_POST['clave']) ? trim($_POST['clave']) : '';
+    // Tomamos el usuario y la clave tal como fueron cargados en el formulario
+    $usuario = !empty($_POST['usuario']) ? $_POST['usuario'] : '';
+    $clave = !empty($_POST['clave']) ? $_POST['clave'] : '';
 
     // Si faltan datos mostramos un mensaje de aviso
     if ($usuario === '' || $clave === '') {
