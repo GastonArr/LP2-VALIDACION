@@ -105,7 +105,7 @@ require_once 'includes/header.php';
                                         <!-- Icono de advertencia -->
                                         <i class="bi bi-exclamation-triangle me-1"></i>
                                         <!-- Texto del mensaje -->
-                                        <?php echo htmlspecialchars($Mensaje); ?>
+                                        <?php echo $Mensaje; ?>
                                     </div>
                                 <?php else: ?>
                                     <!-- Alerta informativa cuando aún no hay errores -->
@@ -125,7 +125,7 @@ require_once 'includes/header.php';
                                             <!-- Prefijo visual con símbolo de usuario -->
                                             <span class="input-group-text" id="inputGroupPrepend">@</span>
                                             <!-- Input donde se escribe el usuario y persiste el valor ingresado -->
-                                            <input type="text" name="usuario" class="form-control" id="usuario" value="<?php echo !empty($_POST['usuario']) ? htmlspecialchars($_POST['usuario']) : ''; ?>" required>
+                                            <input type="text" name="usuario" class="form-control" id="usuario" value="<?php echo !empty($_POST['usuario']) ? $_POST['usuario'] : ''; ?>" required>
                                         </div>
                                     </div>
                                     <!-- Campo para la contraseña -->

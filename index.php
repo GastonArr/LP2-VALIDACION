@@ -95,9 +95,9 @@ require_once 'includes/sidebar.php';
                     <!-- Cuerpo de la tarjeta -->
                     <div class="card-body">
                         <!-- Saludo personalizado que incluye el nombre y el nivel del usuario -->
-                        <h5 class="card-title">Hola, <?php echo htmlspecialchars($nombreCompleto); ?> (<?php echo htmlspecialchars($denominacionNivel); ?>)!</h5>
+                        <h5 class="card-title">Hola, <?php echo $nombreCompleto; ?> (<?php echo $denominacionNivel; ?>)!</h5>
                         <!-- Párrafo que explica las funcionalidades disponibles según el nivel -->
-                        <p class="card-text">Desde este panel podrás gestionar la operación diaria del sistema. Según tu función, podrás gestionar: <?php echo htmlspecialchars($funcionesPermitidas); ?>.</p>
+                        <p class="card-text">Desde este panel podrás gestionar la operación diaria del sistema. Según tu función, podrás gestionar: <?php echo $funcionesPermitidas; ?>.</p>
                     </div>
                 </div>
             </div>
