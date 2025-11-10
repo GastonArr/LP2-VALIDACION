@@ -1,29 +1,9 @@
 <?php
-// Definimos la imagen de perfil por defecto
-$imagenPerfil = 'profile-img.jpg';
-// Si en la sesión hay una imagen personalizada la utilizamos
-if (!empty($_SESSION['Usuario_Img'])) {
-    $imagenPerfil = $_SESSION['Usuario_Img'];
-}
-
-// Recuperamos el apellido del usuario autenticado
-$apellidoSesion = !empty($_SESSION['Usuario_Apellido']) ? $_SESSION['Usuario_Apellido'] : '';
-// Recuperamos el nombre del usuario autenticado
-$nombreSesion = !empty($_SESSION['Usuario_Nombre']) ? $_SESSION['Usuario_Nombre'] : '';
-
-// Construimos el nombre completo mezclando apellido y nombre
-$nombreCompletoSesion = trim($apellidoSesion . ', ' . $nombreSesion);
-// Si falta alguno de los datos ajustamos el formato para evitar comas solas
-if ($apellidoSesion === '' || $nombreSesion === '') {
-    $nombreCompletoSesion = trim($apellidoSesion . ' ' . $nombreSesion);
-}
-// Si no hay información en absoluto mostramos un texto genérico
-if ($nombreCompletoSesion === '') {
-    $nombreCompletoSesion = 'Usuario';
-}
-
-// Obtenemos la denominación del nivel del usuario para mostrarlo en el menú
-$nivelNombreSesion = !empty($_SESSION['Usuario_NombreNivel']) ? $_SESSION['Usuario_NombreNivel'] : 'Usuario';
+$imagenPerfil = $_SESSION['Usuario_Img'];
+$nombreSesion = $_SESSION['Usuario_Nombre'];
+$apellidoSesion = $_SESSION['Usuario_Apellido'];
+$nivelNombreSesion = $_SESSION['Usuario_NombreNivel'];
+$nombreCompletoSesion = $nombreSesion . ' ' . $apellidoSesion;
 ?>
 <!-- Barra superior fija con accesos rápidos y perfil del usuario -->
 <header id="header" class="header fixed-top d-flex align-items-center">
@@ -49,16 +29,16 @@ $nivelNombreSesion = !empty($_SESSION['Usuario_NombreNivel']) ? $_SESSION['Usuar
                 <!-- Enlace que muestra la foto y el nombre del usuario -->
                 <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
                     <!-- Imagen circular del usuario -->
-                    <img src="assets/img/<?php echo htmlspecialchars($imagenPerfil); ?>" alt="Profile" class="rounded-circle">
+                    <img src="assets/img/<?php echo $imagenPerfil; ?>" alt="Profile" class="rounded-circle">
                     <!-- Nombre del usuario visible a partir de pantallas medianas -->
-                    <span class="d-none d-md-block dropdown-toggle ps-2"><?php echo htmlspecialchars($nombreCompletoSesion); ?></span>
+                    <span class="d-none d-md-block dropdown-toggle ps-2"><?php echo $nombreCompletoSesion; ?></span>
                 </a>
                 <!-- Menú desplegable con opciones relacionadas al perfil -->
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
                     <!-- Encabezado del menú con el nombre y el rol -->
                     <li class="dropdown-header">
-                        <h6><?php echo htmlspecialchars($nombreCompletoSesion); ?></h6>
-                        <span><?php echo htmlspecialchars($nivelNombreSesion); ?></span>
+                        <h6><?php echo $nombreCompletoSesion; ?></h6>
+                        <span><?php echo strtoupper($nivelNombreSesion); ?></span>
                     </li>
                     <li>
                         <hr class="dropdown-divider">

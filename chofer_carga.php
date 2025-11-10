@@ -8,7 +8,7 @@ require_once 'funciones/conexion.php';
 require_once 'funciones/funciones.php';
 
 // Si la sesión no tiene un identificador de usuario significa que no inició sesión
-if (empty($_SESSION['Usuario_ID'])) {
+if (empty($_SESSION['Usuario_Nombre'])) {
     // Redirigimos a la página de login para forzar la autenticación
     header('Location: login.php');
     // Interrumpimos el script porque el usuario no tiene acceso
@@ -106,41 +106,41 @@ require_once 'includes/sidebar.php';
                             </div>
                         <?php } ?>
                         <!-- Formulario de alta de chofer -->
-                        <form class="row g-3" method="post" action="" novalidate>
+                        <form class="row g-3" method="post" action="">
                             <!-- Campo para el apellido del chofer -->
                             <div class="col-12">
                                 <!-- Etiqueta asociada al input de apellido -->
                                 <label for="apellido" class="form-label">Apellido (*)</label>
                                 <!-- Input que conserva el valor ingresado previamente -->
-                                <input type="text" class="form-control" id="apellido" name="apellido" value="<?php echo !empty($_POST['apellido']) ? htmlspecialchars($_POST['apellido']) : ''; ?>" required>
+                                <input type="text" class="form-control" id="apellido" name="apellido" value="<?php echo !empty($_POST['apellido']) ? $_POST['apellido'] : ''; ?>">
                             </div>
                             <!-- Campo para el nombre del chofer -->
                             <div class="col-12">
                                 <!-- Etiqueta para el campo nombre -->
                                 <label for="nombre" class="form-label">Nombre (*)</label>
                                 <!-- Input que persiste el valor tras la validación -->
-                                <input type="text" class="form-control" id="nombre" name="nombre" value="<?php echo !empty($_POST['nombre']) ? htmlspecialchars($_POST['nombre']) : ''; ?>" required>
+                                <input type="text" class="form-control" id="nombre" name="nombre" value="<?php echo !empty($_POST['nombre']) ? $_POST['nombre'] : ''; ?>">
                             </div>
                             <!-- Campo para el DNI del chofer -->
                             <div class="col-12">
                                 <!-- Etiqueta descriptiva del DNI -->
                                 <label for="dni" class="form-label">DNI (*)</label>
                                 <!-- Input restringido a texto que mantiene el dato ingresado -->
-                                <input type="text" class="form-control" id="dni" name="dni" value="<?php echo !empty($_POST['dni']) ? htmlspecialchars($_POST['dni']) : ''; ?>" required>
+                                <input type="text" class="form-control" id="dni" name="dni" value="<?php echo !empty($_POST['dni']) ? $_POST['dni'] : ''; ?>">
                             </div>
                             <!-- Campo para el nombre de usuario del chofer -->
                             <div class="col-12">
                                 <!-- Etiqueta del campo usuario -->
                                 <label for="usuario" class="form-label">Usuario (*)</label>
                                 <!-- Input con persistencia del valor de usuario -->
-                                <input type="text" class="form-control" id="usuario" name="usuario" value="<?php echo !empty($_POST['usuario']) ? htmlspecialchars($_POST['usuario']) : ''; ?>" required>
+                                <input type="text" class="form-control" id="usuario" name="usuario" value="<?php echo !empty($_POST['usuario']) ? $_POST['usuario'] : ''; ?>">
                             </div>
                             <!-- Campo para la contraseña de acceso -->
                             <div class="col-12">
                                 <!-- Etiqueta que identifica el campo clave -->
                                 <label for="clave" class="form-label">Clave (*)</label>
                                 <!-- Input de tipo password para ocultar los caracteres -->
-                                <input type="password" class="form-control" id="clave" name="clave" required>
+                                <input type="password" class="form-control" id="clave" name="clave">
                             </div>
                             <!-- Zona con las acciones del formulario -->
                             <div class="text-center">

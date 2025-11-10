@@ -8,7 +8,7 @@ require_once 'funciones/conexion.php';
 require_once 'funciones/funciones.php';
 
 // Validamos que exista un usuario logueado; de lo contrario, no se permite el acceso al panel
-if (empty($_SESSION['Usuario_ID'])) {
+if (empty($_SESSION['Usuario_Nombre'])) {
     // Enviamos al usuario a la pantalla de inicio de sesión
     header('Location: login.php');
     // Terminamos el script porque el usuario no está autenticado
@@ -20,45 +20,10 @@ $pageTitle = 'Panel de Administración';
 // Indicamos que la sección activa del menú es el dashboard
 $activePage = 'dashboard';
 
-// Recuperamos el apellido del usuario si está disponible en la sesión
-$apellidoUsuario = !empty($_SESSION['Usuario_Apellido']) ? $_SESSION['Usuario_Apellido'] : '';
-// Recuperamos el nombre del usuario almacenado en la sesión
-$nombreUsuario = !empty($_SESSION['Usuario_Nombre']) ? $_SESSION['Usuario_Nombre'] : '';
-
-// Construimos el nombre completo concatenando apellido y nombre
-$nombreCompleto = trim($apellidoUsuario . ', ' . $nombreUsuario);
-// Si alguno de los datos está vacío generamos una versión alternativa
-if ($apellidoUsuario === '' || $nombreUsuario === '') {
-    // En este caso unimos los datos con un espacio para evitar una coma sobrante
-    $nombreCompleto = trim($apellidoUsuario . ' ' . $nombreUsuario);
-}
-// Si aún así no se obtuvo información asignamos un texto genérico
-if ($nombreCompleto === '') {
-    $nombreCompleto = 'Usuario';
-}
-
-// Guardamos el nivel del usuario para personalizar el mensaje
-$nivelActual = !empty($_SESSION['Usuario_Nivel']) ? (int) $_SESSION['Usuario_Nivel'] : 0;
-// También obtenemos la descripción textual del nivel para mostrarla
-$denominacionNivel = !empty($_SESSION['Usuario_NombreNivel']) ? $_SESSION['Usuario_NombreNivel'] : 'Usuario';
-
-// Definimos un texto inicial con las funcionalidades disponibles
-$funcionesPermitidas = 'la información disponible en el panel';
-// Según el nivel del usuario personalizamos la lista de tareas habilitadas
-switch ($nivelActual) {
-    case 1:
-        // Nivel 1 (por ejemplo administrador) puede gestionar todo
-        $funcionesPermitidas = 'transportes, choferes y viajes';
-        break;
-    case 2:
-        // Nivel 2 puede manejar transportes y viajes
-        $funcionesPermitidas = 'transportes y viajes';
-        break;
-    case 3:
-        // Nivel 3 tiene acceso limitado al seguimiento de viajes asignados
-        $funcionesPermitidas = 'el seguimiento de los viajes asignados';
-        break;
-}
+$nombreUsuario = $_SESSION['Usuario_Nombre'];
+$apellidoUsuario = $_SESSION['Usuario_Apellido'];
+$nivelNombre = $_SESSION['Usuario_NombreNivel'];
+$saludo = $_SESSION['Usuario_Saludo'];
 
 // Incorporamos la cabecera común del sitio
 require_once 'includes/header.php';
@@ -94,10 +59,10 @@ require_once 'includes/sidebar.php';
                 <div class="card">
                     <!-- Cuerpo de la tarjeta -->
                     <div class="card-body">
-                        <!-- Saludo personalizado que incluye el nombre y el nivel del usuario -->
-                        <h5 class="card-title">Hola, <?php echo htmlspecialchars($nombreCompleto); ?> (<?php echo htmlspecialchars($denominacionNivel); ?>)!</h5>
-                        <!-- Párrafo que explica las funcionalidades disponibles según el nivel -->
-                        <p class="card-text">Desde este panel podrás gestionar la operación diaria del sistema. Según tu función, podrás gestionar: <?php echo htmlspecialchars($funcionesPermitidas); ?>.</p>
+                        <!-- Saludo que replica la estructura utilizada en las clases -->
+                        <h5 class="card-title">Panel - <?php echo $saludo; ?> <?php echo $nombreUsuario; ?></h5>
+                        <!-- Información del usuario tal como se mostró en los ejemplos -->
+                        <p class="card-text">Usuario: <?php echo $nombreUsuario . ' ' . $apellidoUsuario; ?> - Nivel: <?php echo strtoupper($nivelNombre); ?></p>
                     </div>
                 </div>
             </div>
