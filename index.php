@@ -25,15 +25,14 @@ $apellidoUsuario = !empty($_SESSION['Usuario_Apellido']) ? $_SESSION['Usuario_Ap
 // Recuperamos el nombre del usuario almacenado en la sesión
 $nombreUsuario = !empty($_SESSION['Usuario_Nombre']) ? $_SESSION['Usuario_Nombre'] : '';
 
-// Construimos el nombre completo concatenando apellido y nombre
-$nombreCompleto = trim($apellidoUsuario . ', ' . $nombreUsuario);
-// Si alguno de los datos está vacío generamos una versión alternativa
-if ($apellidoUsuario === '' || $nombreUsuario === '') {
-    // En este caso unimos los datos con un espacio para evitar una coma sobrante
-    $nombreCompleto = trim($apellidoUsuario . ' ' . $nombreUsuario);
-}
-// Si aún así no se obtuvo información asignamos un texto genérico
-if ($nombreCompleto === '') {
+// Construimos el nombre completo concatenando apellido y nombre según estén disponibles
+if ($apellidoUsuario !== '' && $nombreUsuario !== '') {
+    $nombreCompleto = $apellidoUsuario . ', ' . $nombreUsuario;
+} elseif ($apellidoUsuario !== '') {
+    $nombreCompleto = $apellidoUsuario;
+} elseif ($nombreUsuario !== '') {
+    $nombreCompleto = $nombreUsuario;
+} else {
     $nombreCompleto = 'Usuario';
 }
 

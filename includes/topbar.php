@@ -11,14 +11,14 @@ $apellidoSesion = !empty($_SESSION['Usuario_Apellido']) ? $_SESSION['Usuario_Ape
 // Recuperamos el nombre del usuario autenticado
 $nombreSesion = !empty($_SESSION['Usuario_Nombre']) ? $_SESSION['Usuario_Nombre'] : '';
 
-// Construimos el nombre completo mezclando apellido y nombre
-$nombreCompletoSesion = trim($apellidoSesion . ', ' . $nombreSesion);
-// Si falta alguno de los datos ajustamos el formato para evitar comas solas
-if ($apellidoSesion === '' || $nombreSesion === '') {
-    $nombreCompletoSesion = trim($apellidoSesion . ' ' . $nombreSesion);
-}
-// Si no hay información en absoluto mostramos un texto genérico
-if ($nombreCompletoSesion === '') {
+// Construimos el nombre completo mezclando apellido y nombre según estén cargados
+if ($apellidoSesion !== '' && $nombreSesion !== '') {
+    $nombreCompletoSesion = $apellidoSesion . ', ' . $nombreSesion;
+} elseif ($apellidoSesion !== '') {
+    $nombreCompletoSesion = $apellidoSesion;
+} elseif ($nombreSesion !== '') {
+    $nombreCompletoSesion = $nombreSesion;
+} else {
     $nombreCompletoSesion = 'Usuario';
 }
 
