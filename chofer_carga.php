@@ -1,64 +1,60 @@
 <?php
-// Iniciamos o retomamos la sesión para poder leer datos del usuario autenticado
+// Iniciamos o retomamos la sesión para poder leer variables del usuario logueado.
 session_start();
 
-// Cargamos el archivo que crea y devuelve la conexión con la base de datos
+// Cargamos la función ConexionBD() que crea el enlace con la base de datos MySQL.
 require_once 'funciones/conexion.php';
-// Cargamos las funciones auxiliares que encapsulan reglas del negocio
+// Cargamos las funciones auxiliares que encapsulan validaciones y operaciones de inserción.
 require_once 'funciones/funciones.php';
 
-// Si la sesión no tiene un identificador de usuario significa que no inició sesión
+// Si la sesión no contiene el identificador del usuario es porque todavía no inició sesión.
 if (empty($_SESSION['Usuario_ID'])) {
-    // Redirigimos a la página de login para forzar la autenticación
+    // Redirigimos al formulario de login para obligar a autenticarse.
     header('Location: login.php');
-    // Interrumpimos el script porque el usuario no tiene acceso
+    // Detenemos la ejecución para que no se vea contenido restringido.
     exit;
 }
 
-// En clase la profe limitó el alta de usuarios a nivel 1, replicamos la misma idea para choferes
+// Solo el administrador (nivel 1) está autorizado a crear choferes según el modelo explicado en clase.
 if (empty($_SESSION['Usuario_Nivel']) || (int) $_SESSION['Usuario_Nivel'] > 1) {
-    // Si el nivel es superior lo devolvemos al panel principal
+    // Si no cumple la condición lo enviamos al panel principal.
     header('Location: index.php');
-    // Cortamos la ejecución para que no pueda ver la pantalla restringida
+    // Cortamos el script inmediatamente.
     exit;
 }
 
-// Obtenemos un objeto de conexión para realizar consultas a la base de datos
+// Abrimos la conexión con la base de datos para validar y registrar la información.
 $MiConexion = ConexionBD();
 
-// Definimos el título de la pestaña y cabecera
+// Configuramos datos para la vista: título de la pestaña y opción activa del menú lateral.
 $pageTitle = 'Registrar un nuevo chofer';
-// Indicamos cuál opción del menú debe quedar activa
 $activePage = 'choferes';
 
-// Inicializamos la variable que mostrará mensajes al usuario
+// Definimos variables para comunicar mensajes al usuario.
 $Mensaje = '';
-// Configuramos el estilo visual de la alerta
 $Estilo = 'warning';
 
-// Si se hizo clic en el botón Registrar procesamos el formulario
+// Cuando se envía el formulario el botón submit llega con el nombre BotonRegistrar.
 if (!empty($_POST['BotonRegistrar'])) {
-    // Validamos los datos enviados y guardamos el texto resultante
+    // Validamos los datos del formulario y guardamos el texto generado (vacío si está todo correcto).
     $Mensaje = Validar_Datos_Chofer($MiConexion);
-    // Si no hubo mensajes de error continuamos con la inserción
+    // Solo continuamos si no hubo errores.
     if (empty($Mensaje)) {
-        // Intentamos guardar el chofer y verificamos el resultado de la operación
+        // Insertar_Chofer() devuelve false cuando ocurre un error; cualquier otro valor indica éxito.
         if (Insertar_Chofer($MiConexion) != false) {
-            // Informamos que la operación se realizó correctamente
+            // Mostramos un mensaje de confirmación.
             $Mensaje = 'Se ha registrado correctamente.';
-            // Limpiamos el arreglo $_POST para resetear el formulario
+            // Limpiamos los datos enviados para que el formulario se resetee.
             $_POST = array();
-            // Ajustamos el estilo a "success" para la alerta
+            // Cambiamos el estilo de la alerta a success para que sea verde.
             $Estilo = 'success';
         }
     }
 }
 
-// Incluimos la cabecera con los recursos comunes del sitio
+// Incluimos los elementos comunes de la interfaz.
 require_once 'includes/header.php';
-// Incluimos la barra de navegación superior
 require_once 'includes/topbar.php';
-// Incluimos el menú lateral de la aplicación
 require_once 'includes/sidebar.php';
 ?>
 <!-- Contenedor principal del área visible -->
@@ -92,19 +88,20 @@ require_once 'includes/sidebar.php';
                     <div class="card-body">
                         <!-- Subtítulo informativo -->
                         <h5 class="card-title">Ingresa los datos</h5>
-                        <!-- Mensaje informativo sobre los campos obligatorios -->
-                        <div class="alert alert-info" role="alert">
-                            <!-- Icono de información y texto aclaratorio -->
-                            <i class="bi bi-info-circle me-1"></i> Los campos indicados con (*) son requeridos
-                        </div>
-                        <!-- Bloque PHP que muestra el mensaje si existe -->
-                        <?php if (!empty($Mensaje)) { ?>
+                        <!-- Bloque condicional que muestra mensajes de error o éxito -->
+                        <?php if (!empty($Mensaje)): ?>
                             <!-- Alerta que cambia de color según el estado -->
                             <div class="alert alert-<?php echo $Estilo; ?>" role="alert">
                                 <!-- Texto del mensaje a mostrar -->
                                 <?php echo $Mensaje; ?>
                             </div>
-                        <?php } ?>
+                        <?php else: ?>
+                            <!-- Mensaje informativo sobre los campos obligatorios -->
+                            <div class="alert alert-info" role="alert">
+                                <!-- Icono de información y texto aclaratorio -->
+                                <i class="bi bi-info-circle me-1"></i> Los campos indicados con (*) son requeridos
+                            </div>
+                        <?php endif; ?>
                         <!-- Formulario de alta de chofer -->
                         <form class="row g-3" method="post" action="" novalidate>
                             <!-- Campo para el apellido del chofer -->
@@ -159,6 +156,6 @@ require_once 'includes/sidebar.php';
     </section>
 </main>
 <?php
-// Incluimos el pie de página con scripts y cierre del layout
+// Incluimos el pie de página con scripts y cierre del layout.
 require_once 'includes/footer.php';
 ?>

@@ -1,80 +1,80 @@
 <?php
-// Iniciamos la sesión para poder acceder a las variables de sesión en este archivo
+// Iniciamos o retomamos la sesión para trabajar con las variables persistentes del usuario conectado.
 session_start();
 
-// Importamos el archivo que crea la conexión a la base de datos
+// Incorporamos el archivo que define la función ConexionBD() para abrir la comunicación con la base de datos MySQL.
 require_once 'funciones/conexion.php';
-// Importamos el archivo que contiene funciones auxiliares reutilizables
+// Incorporamos el archivo con todas las funciones auxiliares que encapsulan reglas de validación y operaciones de guardado.
 require_once 'funciones/funciones.php';
 
-// Si no existe un usuario autenticado redirigimos al formulario de inicio de sesión
+// Si la variable de sesión con el identificador del usuario no existe significa que nadie inició sesión todavía.
 if (empty($_SESSION['Usuario_ID'])) {
-    // Indicamos el destino de la redirección a la página de login
+    // Redirigimos al formulario de login para que ingrese sus credenciales.
     header('Location: login.php');
-    // Terminamos la ejecución del script después de enviar la redirección
+    // Cortamos la ejecución inmediatamente para que no se muestre nada de esta página protegida.
     exit;
 }
 
-// Siguiendo el ejemplo de la profe, solo el nivel 1 puede cargar datos desde el panel
-if (empty($_SESSION['Usuario_Nivel']) || (int) $_SESSION['Usuario_Nivel'] > 1) {
-    // Redirigimos al dashboard principal cuando no es administrador
+// Solo bloqueamos a los perfiles que superan al operador (nivel 2) para que administradores y operadores puedan cargar transportes.
+if (empty($_SESSION['Usuario_Nivel']) || (int) $_SESSION['Usuario_Nivel'] > 2) {
+    // Si no tiene el nivel requerido lo enviamos al panel principal.
     header('Location: index.php');
-    // Interrumpimos la ejecución para evitar que acceda al contenido restringido
+    // Terminamos el script para evitar accesos indebidos.
     exit;
 }
 
-// Guardamos la conexión a la base de datos para reutilizarla más adelante
+// Abrimos la conexión a la base de datos y guardamos el enlace para reutilizarlo a lo largo del script.
 $MiConexion = ConexionBD();
 
-// Definimos el título de la página que se mostrará en la cabecera
+// Definimos el título que se mostrará en la pestaña del navegador y en el encabezado HTML.
 $pageTitle = 'Registrar un nuevo transporte';
-// Indicamos qué opción del menú lateral debe aparecer activa
+// Indicamos qué elemento del menú lateral debe resaltarse para marcar la ubicación actual del usuario.
 $activePage = 'camion_carga';
 
-// Obtenemos desde la base de datos todas las marcas de vehículos disponibles
+// Listar_Marcas() devuelve un arreglo con todas las marcas cargadas en la tabla marcas, lo guardamos para armar el selector.
 $marcas = Listar_Marcas($MiConexion);
 
-// Inicializamos el mensaje para el usuario como cadena vacía
+// Preparamos variables de mensaje para avisos de validación o confirmaciones.
 $Mensaje = '';
-// Configuramos el estilo del mensaje para usar con las alertas de Bootstrap
+// Establecemos el estilo por defecto en warning (amarillo) hasta saber el resultado final de la operación.
 $Estilo = 'warning';
 
-// Verificamos si se envió el formulario presionando el botón Registrar
+// Cuando el usuario presiona el botón de enviar el formulario llega el campo BotonRegistrar en $_POST.
 if (!empty($_POST['BotonRegistrar'])) {
-    // Ejecutamos la validación de datos y guardamos el resultado para mostrarlo
+    // Ejecutamos la rutina de validación que revisa todos los campos requeridos y formatos.
     $Mensaje = Validar_Datos_Transporte($MiConexion);
-    // Si no se generaron mensajes de error procedemos a registrar el transporte
+    // Si la validación no devolvió errores (es decir $Mensaje quedó vacío) procedemos a guardar los datos.
     if (empty($Mensaje)) {
-        // Intentamos insertar el nuevo transporte en la base de datos
+        // Insertar_Transporte() intenta crear el registro en la base y devuelve false si hubo algún problema.
         if (Insertar_Transporte($MiConexion) != false) {
-            // Informamos al usuario que la operación fue exitosa
+            // Informamos al usuario que el transporte se registró correctamente.
             $Mensaje = 'Se ha registrado correctamente.';
-            // Limpiamos los valores enviados para evitar reenvíos accidentales
+            // Limpiamos $_POST para que los campos del formulario aparezcan vacíos tras la recarga.
             $_POST = array();
-            // Cambiamos el estilo del mensaje a éxito
+            // Cambiamos el estilo de la alerta a success (verde) para mostrar un mensaje positivo.
             $Estilo = 'success';
         }
     }
 }
 
-// Calculamos cuántas marcas se recuperaron para iterar el listado
+// Calculamos la cantidad de marcas disponibles para controlar el bucle que arma el listado de opciones.
 $CantidadMarcas = count($marcas);
-// Guardamos la marca seleccionada para mantenerla en el formulario al validar
+// Recuperamos la marca seleccionada anteriormente para dejarla marcada si hubo un error de validación.
 $MarcaSeleccionada = !empty($_POST['marca_id']) ? $_POST['marca_id'] : '';
-// Conservamos el modelo escrito anteriormente para no perderlo tras una validación
+// Guardamos el modelo ingresado por el usuario para que no se pierda si la validación falla.
 $ModeloValor = !empty($_POST['modelo']) ? $_POST['modelo'] : '';
-// Conservamos el año ingresado por el usuario
+// Guardamos el año ingresado por el usuario con el mismo objetivo.
 $AnioValor = !empty($_POST['anio']) ? $_POST['anio'] : '';
-// Conservamos la patente ingresada
+// Guardamos la patente ingresada previamente.
 $PatenteValor = !empty($_POST['patente']) ? $_POST['patente'] : '';
-// Determinamos si el check de disponibilidad debe aparecer marcado
+// Si el usuario envió el formulario usamos el valor real del checkbox, de lo contrario lo dejamos marcado por defecto.
 $DisponibleMarcado = !empty($_POST) ? !empty($_POST['disponible']) : true;
 
-// Incluimos la cabecera estándar del sitio
+// Agregamos la cabecera compartida que define el HTML inicial y los recursos.
 require_once 'includes/header.php';
-// Incluimos la barra superior de navegación
+// Agregamos la barra superior que muestra el usuario actual y accesos rápidos.
 require_once 'includes/topbar.php';
-// Incluimos el menú lateral de navegación
+// Agregamos el menú lateral de navegación.
 require_once 'includes/sidebar.php';
 ?>
 <!-- Contenedor principal del contenido -->
@@ -108,19 +108,20 @@ require_once 'includes/sidebar.php';
                     <div class="card-body">
                         <!-- Subtítulo que guía al usuario -->
                         <h5 class="card-title">Ingresa los datos</h5>
-                        <!-- Alerta informativa con instrucciones para completar el formulario -->
-                        <div class="alert alert-info" role="alert">
-                            <!-- Icono decorativo dentro de la alerta -->
-                            <i class="bi bi-info-circle me-1"></i> Los campos indicados con (*) son requeridos
-                        </div>
                         <!-- Bloque condicional que muestra mensajes de error o éxito -->
-                        <?php if (!empty($Mensaje)) { ?>
+                        <?php if (!empty($Mensaje)): ?>
                             <!-- Alerta dinámica que utiliza el estilo configurado en PHP -->
                             <div class="alert alert-<?php echo $Estilo; ?>" role="alert">
                                 <!-- Texto del mensaje generado por el procesamiento del formulario -->
                                 <?php echo $Mensaje; ?>
                             </div>
-                        <?php } ?>
+                        <?php else: ?>
+                            <!-- Alerta informativa cuando aún no hay errores -->
+                            <div class="alert alert-info" role="alert">
+                                <!-- Icono de información y recordatorio sobre los campos obligatorios -->
+                                <i class="bi bi-info-circle me-1"></i> Los campos indicados con (*) son requeridos
+                            </div>
+                        <?php endif; ?>
                         <!-- Formulario para registrar un nuevo transporte -->
                         <form class="row g-3" method="post" action="" novalidate>
                             <!-- Campo de selección de la marca del transporte -->
@@ -132,11 +133,10 @@ require_once 'includes/sidebar.php';
                                     <!-- Opción por defecto para obligar a elegir una marca -->
                                     <option value="">Selecciona una opción</option>
                                     <?php
-                                    // Recorremos cada marca disponible para construir las opciones del selector
+                                    // Recorremos cada marca disponible para construir las opciones del selector.
                                     for ($i = 0; $i < $CantidadMarcas; $i++) {
-                                        // Verificamos si la marca actual es la que había seleccionado el usuario
-                                        $Seleccionado = (!empty($MarcaSeleccionada) && $MarcaSeleccionada == $marcas[$i]['id'])
-                                        ? 'selected' : '';
+                                        // Verificamos si la marca actual es la que había seleccionado el usuario para dejarla marcada.
+                                        $Seleccionado = (!empty($MarcaSeleccionada) && $MarcaSeleccionada == $marcas[$i]['id']) ? 'selected' : '';
                                         ?>
                                         <!-- Opción individual del selector con el identificador y la denominación de la marca -->
                                         <option value="<?php echo $marcas[$i]['id']; ?>" <?php echo $Seleccionado; ?>>
@@ -195,6 +195,6 @@ require_once 'includes/sidebar.php';
     </section>
 </main>
 <?php
-// Cargamos el pie de página estándar del sitio
+// Cargamos el pie de página estándar del sitio que cierra la estructura HTML y agrega los scripts compartidos.
 require_once 'includes/footer.php';
 ?>
