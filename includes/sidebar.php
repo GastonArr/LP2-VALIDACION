@@ -1,22 +1,19 @@
 <?php
-// Inicializamos la variable que guarda la página activa para marcar la navegación.
+// En las clases la profe utilizaba variables simples para controlar la navegación
 $paginaActual = '';
 if (!empty($activePage)) {
-    // Si el controlador define una página activa la guardamos en esta variable.
     $paginaActual = $activePage;
 }
 
-// Guardamos el nivel del usuario autenticado para decidir qué opciones mostrar.
 $nivelSesion = 0;
 if (!empty($_SESSION['Usuario_Nivel'])) {
     $nivelSesion = $_SESSION['Usuario_Nivel'];
 }
 
-// Determinamos si el usuario es administrador (nivel 1) para habilitar secciones exclusivas.
-$esAdministrador = ($nivelSesion == 1);
-
-// Habilitamos las opciones de carga de transportes y viajes tanto para administradores (nivel 1) como operadores (nivel 2).
-$puedeCargarTransportesYViajes = ($nivelSesion > 0 && $nivelSesion <= 2);
+$esAdministrador = false;
+if ($nivelSesion == 1) {
+    $esAdministrador = true;
+}
 ?>
 <!-- Menú lateral con las opciones disponibles para el usuario -->
 <aside id="sidebar" class="sidebar">
@@ -30,8 +27,8 @@ $puedeCargarTransportesYViajes = ($nivelSesion > 0 && $nivelSesion <= 2);
             </a>
         </li>
 
-        <!-- Sección de transportes disponible para administradores y operadores -->
-        <?php if ($puedeCargarTransportesYViajes) { ?>
+        <!-- Sección de transportes solo disponible para el administrador (nivel 1) -->
+        <?php if ($esAdministrador) { ?>
             <li class="nav-item">
                 <!-- Cabecera que abre o cierra el submenú de transportes -->
                 <a class="nav-link<?php if ($paginaActual != 'camion_carga' && $paginaActual != 'choferes') { echo ' collapsed'; } ?>" data-bs-target="#transportes-nav" data-bs-toggle="collapse" href="#">
@@ -40,19 +37,17 @@ $puedeCargarTransportesYViajes = ($nivelSesion > 0 && $nivelSesion <= 2);
                 <!-- Submenú de transportes con sus opciones -->
                 <ul id="transportes-nav" class="nav-content collapse<?php if ($paginaActual == 'camion_carga' || $paginaActual == 'choferes') { echo ' show'; } ?>" data-bs-parent="#sidebar-nav">
                     <li>
-                        <!-- Enlace para registrar un nuevo transporte, habilitado para administradores y operadores -->
+                        <!-- Enlace para registrar un nuevo transporte, disponible solo para el administrador -->
                         <a href="camion_carga.php"<?php if ($paginaActual == 'camion_carga') { echo ' class="active"'; } ?>>
                             <i class="bi bi-file-earmark-plus"></i><span>Cargar nuevo transporte</span>
                         </a>
                     </li>
-                    <?php if ($esAdministrador) { ?>
-                        <li>
-                            <!-- Enlace para registrar un nuevo chofer tal como se mostró en clase -->
-                            <a href="chofer_carga.php"<?php if ($paginaActual == 'choferes') { echo ' class="active"'; } ?>>
-                                <i class="bi bi-person-plus"></i><span>Cargar nuevo chofer</span>
-                            </a>
-                        </li>
-                    <?php } ?>
+                    <li>
+                        <!-- Enlace para registrar un nuevo chofer tal como se mostró en clase -->
+                        <a href="chofer_carga.php"<?php if ($paginaActual == 'choferes') { echo ' class="active"'; } ?>>
+                            <i class="bi bi-person-plus"></i><span>Cargar nuevo chofer</span>
+                        </a>
+                    </li>
                 </ul>
             </li>
         <?php } ?>
@@ -65,9 +60,9 @@ $puedeCargarTransportesYViajes = ($nivelSesion > 0 && $nivelSesion <= 2);
             </a>
             <!-- Submenú con las acciones relacionadas a los viajes -->
             <ul id="viajes-nav" class="nav-content collapse<?php if ($paginaActual == 'viaje_carga' || $paginaActual == 'viajes_listado') { echo ' show'; } ?>" data-bs-parent="#sidebar-nav">
-                <?php if ($puedeCargarTransportesYViajes) { ?>
+                <?php if ($esAdministrador) { ?>
                     <li>
-                        <!-- Enlace para registrar un nuevo viaje, habilitado para administradores y operadores -->
+                        <!-- Enlace para registrar un nuevo viaje, reservado al administrador como en el ejemplo -->
                         <a href="viaje_carga.php"<?php if ($paginaActual == 'viaje_carga') { echo ' class="active"'; } ?>>
                             <i class="bi bi-file-earmark-plus"></i><span>Cargar nuevo</span>
                         </a>

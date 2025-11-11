@@ -6,9 +6,12 @@ if (!empty($_SESSION['Usuario_Img'])) {
     $imagenPerfil = $_SESSION['Usuario_Img'];
 }
 
-// Recuperamos el apellido del usuario autenticado para mostrarlo en el menú superior.
-$apellidoSesion = !empty($_SESSION['Usuario_Apellido']) ? $_SESSION['Usuario_Apellido'] : '';
-// Recuperamos el nombre del usuario autenticado.
+// Recuperamos el apellido del usuario autenticado
+$apellidoSesion = '';
+if (!empty($_SESSION['Usuario_Apellido'])) {
+    $apellidoSesion = $_SESSION['Usuario_Apellido'];
+}
+// Recuperamos el nombre del usuario autenticado
 $nombreSesion = !empty($_SESSION['Usuario_Nombre']) ? $_SESSION['Usuario_Nombre'] : '';
 
 // Construimos el nombre completo mezclando apellido y nombre según estén cargados.
