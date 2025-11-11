@@ -23,35 +23,19 @@ $pageTitle = 'Listado de viajes registrados';
 // Indicamos qué opción del menú lateral debe mostrarse activa
 $activePage = 'viajes_listado';
 
-// Determinamos el nivel de acceso del usuario logueado
+// Determinamos el nivel de acceso del usuario logueado para replicar las comparaciones vistas en clase
 $nivelActual = !empty($_SESSION['Usuario_Nivel']) ? (int) $_SESSION['Usuario_Nivel'] : 0;
-// Identificamos si el usuario es un chofer (nivel 3)
-$esChofer = ($nivelActual === 3);
-// Inicializamos el filtro de chofer como null (sin filtro)
+// En el ejemplo de la profe los choferes (nivel 3) solo veían su información, aplicamos ese filtro
 $choferFiltradoId = null;
-// Si el usuario es chofer filtramos los viajes para mostrar solo los suyos
-if ($esChofer && !empty($_SESSION['Usuario_ID'])) {
+if ($nivelActual === 3 && !empty($_SESSION['Usuario_ID'])) {
     $choferFiltradoId = (int) $_SESSION['Usuario_ID'];
 }
 
 // Recuperamos los viajes desde la base de datos aplicando el filtro si corresponde
 $viajes = Listar_Viajes($MiConexion, $choferFiltradoId);
 
-// Configuramos qué columnas de la tabla se muestran según el rol
-$mostrarCosto = true;
-$mostrarMontoChofer = true;
-$mostrarPorcentajeEnMonto = true;
-
-// Los choferes no deben ver el costo total ni el porcentaje junto al monto
-if ($nivelActual === 3) {
-    $mostrarCosto = false;
-    $mostrarPorcentajeEnMonto = false;
-}
-
-// Los usuarios de nivel 2 no ven el monto destinado al chofer
-if ($nivelActual === 2) {
-    $mostrarMontoChofer = false;
-}
+// Solo el administrador (nivel 1) ve los importes completos, igual que en el panel de ejemplo
+$mostrarDatosEconomicos = ($nivelActual === 1);
 
 // Cargamos la cabecera del sitio con estilos y scripts necesarios
 require_once 'includes/header.php';
@@ -104,12 +88,9 @@ require_once 'includes/sidebar.php';
                                 <th>Camión</th>
                                 <!-- Columna con el nombre del chofer -->
                                 <th>Chofer</th>
-                                <!-- Columna opcional con el costo total del viaje -->
-                                <?php if ($mostrarCosto): ?>
+                                <!-- Columnas económicas visibles solo para el administrador -->
+                                <?php if ($mostrarDatosEconomicos): ?>
                                     <th>Costo viaje</th>
-                                <?php endif; ?>
-                                <!-- Columna opcional con el monto para el chofer -->
-                                <?php if ($mostrarMontoChofer): ?>
                                     <th>Monto Chofer</th>
                                 <?php endif; ?>
                             </tr>
@@ -119,7 +100,7 @@ require_once 'includes/sidebar.php';
                             <!-- Si no hay registros mostramos un mensaje -->
                             <?php if (!$viajes): ?>
                                 <tr>
-                                    <td colspan="<?php echo 5 + (int) $mostrarCosto + (int) $mostrarMontoChofer; ?>" class="text-center">No hay viajes registrados.</td>
+                                    <td colspan="<?php echo 5 + ($mostrarDatosEconomicos ? 2 : 0); ?>" class="text-center">No hay viajes registrados.</td>
                                 </tr>
                             <?php else: ?>
                                 <?php
@@ -136,8 +117,6 @@ require_once 'includes/sidebar.php';
                                             $FechaFormateada = date('d/m/Y', $Timestamp);
                                         }
                                     }
-                                    // Calculamos el monto que corresponde al chofer según el porcentaje asignado
-                                    $MontoChofer = ((float) $viajes[$i]['costo'] * (int) $viajes[$i]['porcentaje_chofer']) / 100;
                                     ?>
                                     <tr>
                                         <!-- Número de fila comenzando en 1 -->
@@ -150,18 +129,15 @@ require_once 'includes/sidebar.php';
                                         <td><?php echo $viajes[$i]['marca'] . ' - ' . $viajes[$i]['modelo'] . ' - ' . $viajes[$i]['patente']; ?></td>
                                         <!-- Nombre completo del chofer -->
                                         <td><?php echo $viajes[$i]['chofer_apellido'] . ', ' . $viajes[$i]['chofer_nombre']; ?></td>
-                                        <!-- Costo total del viaje si el rol lo permite -->
-                                        <?php if ($mostrarCosto): ?>
+                                        <!-- Costos y porcentaje solo para el administrador -->
+                                        <?php if ($mostrarDatosEconomicos): ?>
                                             <td>$ <?php echo number_format((float) $viajes[$i]['costo'], 2, ',', '.'); ?></td>
-                                        <?php endif; ?>
-                                        <!-- Monto a pagar al chofer si corresponde -->
-                                        <?php if ($mostrarMontoChofer): ?>
+                                            <?php
+                                            $MontoChofer = ((float) $viajes[$i]['costo'] * (int) $viajes[$i]['porcentaje_chofer']) / 100;
+                                            ?>
                                             <td>
                                                 $ <?php echo number_format($MontoChofer, 2, ',', '.'); ?>
-                                                <!-- Mostrar porcentaje entre paréntesis solo para roles que lo requieren -->
-                                                <?php if ($mostrarPorcentajeEnMonto): ?>
-                                                    (<?php echo (int) $viajes[$i]['porcentaje_chofer']; ?>%)
-                                                <?php endif; ?>
+                                                (<?php echo (int) $viajes[$i]['porcentaje_chofer']; ?>%)
                                             </td>
                                         <?php endif; ?>
                                     </tr>

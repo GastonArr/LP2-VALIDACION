@@ -15,9 +15,9 @@ if (empty($_SESSION['Usuario_ID'])) {
     exit;
 }
 
-// Si el usuario autenticado tiene nivel 3 (por ejemplo, perfil restringido) lo regresamos al inicio
-if (!empty($_SESSION['Usuario_Nivel']) && (int) $_SESSION['Usuario_Nivel'] === 3) {
-    // Redirigimos al dashboard principal
+// Siguiendo el ejemplo de la profe, solo el nivel 1 puede cargar datos desde el panel
+if (empty($_SESSION['Usuario_Nivel']) || (int) $_SESSION['Usuario_Nivel'] > 1) {
+    // Redirigimos al dashboard principal cuando no es administrador
     header('Location: index.php');
     // Interrumpimos la ejecución para evitar que acceda al contenido restringido
     exit;
