@@ -88,19 +88,20 @@ require_once 'includes/sidebar.php';
                     <div class="card-body">
                         <!-- Subtítulo informativo -->
                         <h5 class="card-title">Ingresa los datos</h5>
-                        <!-- Mensaje informativo sobre los campos obligatorios -->
-                        <div class="alert alert-info" role="alert">
-                            <!-- Icono de información y texto aclaratorio -->
-                            <i class="bi bi-info-circle me-1"></i> Los campos indicados con (*) son requeridos
-                        </div>
-                        <!-- Bloque PHP que muestra el mensaje si existe -->
-                        <?php if (!empty($Mensaje)) { ?>
+                        <!-- Bloque condicional que muestra mensajes de error o éxito -->
+                        <?php if (!empty($Mensaje)): ?>
                             <!-- Alerta que cambia de color según el estado -->
                             <div class="alert alert-<?php echo $Estilo; ?>" role="alert">
                                 <!-- Texto del mensaje a mostrar -->
                                 <?php echo $Mensaje; ?>
                             </div>
-                        <?php } ?>
+                        <?php else: ?>
+                            <!-- Mensaje informativo sobre los campos obligatorios -->
+                            <div class="alert alert-info" role="alert">
+                                <!-- Icono de información y texto aclaratorio -->
+                                <i class="bi bi-info-circle me-1"></i> Los campos indicados con (*) son requeridos
+                            </div>
+                        <?php endif; ?>
                         <!-- Formulario de alta de chofer -->
                         <form class="row g-3" method="post" action="" novalidate>
                             <!-- Campo para el apellido del chofer -->

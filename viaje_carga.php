@@ -102,19 +102,20 @@ require_once 'includes/sidebar.php';
                     <div class="card-body">
                         <!-- Subtítulo descriptivo -->
                         <h5 class="card-title">Ingresa los datos</h5>
-                        <!-- Alerta informativa con instrucciones generales -->
-                        <div class="alert alert-info" role="alert">
-                            <!-- Icono de información y recordatorio de campos obligatorios -->
-                            <i class="bi bi-info-circle me-1"></i> Los campos indicados con (*) son requeridos
-                        </div>
                         <!-- Sección condicional para mostrar mensajes de estado -->
-                        <?php if (!empty($Mensaje)) { ?>
+                        <?php if (!empty($Mensaje)): ?>
                             <!-- Alerta cuyo estilo depende del resultado del proceso -->
                             <div class="alert alert-<?php echo $Estilo; ?>" role="alert">
                                 <!-- Mensaje de error o éxito -->
                                 <?php echo $Mensaje; ?>
                             </div>
-                        <?php } ?>
+                        <?php else: ?>
+                            <!-- Alerta informativa con instrucciones generales -->
+                            <div class="alert alert-info" role="alert">
+                                <!-- Icono de información y recordatorio de campos obligatorios -->
+                                <i class="bi bi-info-circle me-1"></i> Los campos indicados con (*) son requeridos
+                            </div>
+                        <?php endif; ?>
                         <!-- Formulario para crear un nuevo viaje -->
                         <form class="row g-3" method="post" action="" novalidate>
                             <!-- Selector de chofer -->
