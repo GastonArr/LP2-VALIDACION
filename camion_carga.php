@@ -108,19 +108,20 @@ require_once 'includes/sidebar.php';
                     <div class="card-body">
                         <!-- Subtítulo que guía al usuario -->
                         <h5 class="card-title">Ingresa los datos</h5>
-                        <!-- Alerta informativa con instrucciones para completar el formulario -->
-                        <div class="alert alert-info" role="alert">
-                            <!-- Icono decorativo dentro de la alerta -->
-                            <i class="bi bi-info-circle me-1"></i> Los campos indicados con (*) son requeridos
-                        </div>
                         <!-- Bloque condicional que muestra mensajes de error o éxito -->
-                        <?php if (!empty($Mensaje)) { ?>
+                        <?php if (!empty($Mensaje)): ?>
                             <!-- Alerta dinámica que utiliza el estilo configurado en PHP -->
                             <div class="alert alert-<?php echo $Estilo; ?>" role="alert">
                                 <!-- Texto del mensaje generado por el procesamiento del formulario -->
                                 <?php echo $Mensaje; ?>
                             </div>
-                        <?php } ?>
+                        <?php else: ?>
+                            <!-- Alerta informativa cuando aún no hay errores -->
+                            <div class="alert alert-info" role="alert">
+                                <!-- Icono de información y recordatorio sobre los campos obligatorios -->
+                                <i class="bi bi-info-circle me-1"></i> Los campos indicados con (*) son requeridos
+                            </div>
+                        <?php endif; ?>
                         <!-- Formulario para registrar un nuevo transporte -->
                         <form class="row g-3" method="post" action="" novalidate>
                             <!-- Campo de selección de la marca del transporte -->
