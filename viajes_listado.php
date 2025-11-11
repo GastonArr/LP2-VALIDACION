@@ -1,47 +1,47 @@
 <?php
-// Iniciamos la sesión para asegurarnos de que el usuario esté autenticado
+// Iniciamos la sesión para asegurarnos de que el usuario esté autenticado.
 session_start();
 
-// Incluimos el archivo con la lógica de conexión a la base de datos
+// Incluimos el archivo con la lógica de conexión a la base de datos.
 require_once 'funciones/conexion.php';
-// Incluimos las funciones de negocio que utilizaremos para listar viajes
+// Incluimos las funciones de negocio que utilizaremos para listar viajes.
 require_once 'funciones/funciones.php';
 
-// Si no hay un usuario conectado, no se permite acceder al listado
+// Si no hay un usuario conectado, no se permite acceder al listado.
 if (empty($_SESSION['Usuario_ID'])) {
-    // Redirigimos a la pantalla de login
+    // Redirigimos a la pantalla de login.
     header('Location: login.php');
-    // Terminamos el script para proteger el contenido
+    // Terminamos el script para proteger el contenido.
     exit;
 }
 
-// Obtenemos un objeto de conexión a la base de datos
+// Obtenemos un objeto de conexión a la base de datos.
 $MiConexion = ConexionBD();
 
-// Definimos el título de la página actual
+// Definimos el título de la página actual.
 $pageTitle = 'Listado de viajes registrados';
-// Indicamos qué opción del menú lateral debe mostrarse activa
+// Indicamos qué opción del menú lateral debe mostrarse activa.
 $activePage = 'viajes_listado';
 
-// Determinamos el nivel de acceso del usuario logueado para replicar las comparaciones vistas en clase
+// Determinamos el nivel de acceso del usuario logueado para replicar las comparaciones vistas en clase.
 $nivelActual = !empty($_SESSION['Usuario_Nivel']) ? (int) $_SESSION['Usuario_Nivel'] : 0;
-// En el ejemplo de la profe los choferes (nivel 3) solo veían su información, aplicamos ese filtro
+// En el ejemplo de la profe los choferes (nivel 3) solo veían su información, aplicamos ese filtro.
 $choferFiltradoId = null;
 if ($nivelActual === 3 && !empty($_SESSION['Usuario_ID'])) {
     $choferFiltradoId = (int) $_SESSION['Usuario_ID'];
 }
 
-// Recuperamos los viajes desde la base de datos aplicando el filtro si corresponde
+// Recuperamos los viajes desde la base de datos aplicando el filtro si corresponde.
 $viajes = Listar_Viajes($MiConexion, $choferFiltradoId);
 
-// Solo el administrador (nivel 1) ve los importes completos, igual que en el panel de ejemplo
+// Solo el administrador (nivel 1) ve los importes completos, igual que en el panel de ejemplo.
 $mostrarDatosEconomicos = ($nivelActual === 1);
 
-// Cargamos la cabecera del sitio con estilos y scripts necesarios
+// Cargamos la cabecera del sitio con estilos y scripts necesarios.
 require_once 'includes/header.php';
-// Cargamos la barra superior de navegación
+// Cargamos la barra superior de navegación.
 require_once 'includes/topbar.php';
-// Cargamos el menú lateral con las opciones disponibles
+// Cargamos el menú lateral con las opciones disponibles.
 require_once 'includes/sidebar.php';
 ?>
 <!-- Contenido principal del listado de viajes -->
@@ -104,13 +104,13 @@ require_once 'includes/sidebar.php';
                                 </tr>
                             <?php else: ?>
                                 <?php
-                                // Calculamos la cantidad total de viajes recuperados
+                                // Calculamos la cantidad total de viajes recuperados.
                                 $CantidadViajes = count($viajes);
-                                // Recorremos cada viaje para mostrarlo en una fila
+                                // Recorremos cada viaje para mostrarlo en una fila.
                                 for ($i = 0; $i < $CantidadViajes; $i++) {
-                                    // Inicializamos la fecha formateada como cadena vacía
+                                    // Inicializamos la fecha formateada como cadena vacía.
                                     $FechaFormateada = '';
-                                    // Si hay una fecha programada válida intentamos formatearla
+                                    // Si hay una fecha programada válida intentamos formatearla.
                                     if (!empty($viajes[$i]['fecha_programada'])) {
                                         $Timestamp = strtotime($viajes[$i]['fecha_programada']);
                                         if ($Timestamp != false) {
@@ -133,6 +133,7 @@ require_once 'includes/sidebar.php';
                                         <?php if ($mostrarDatosEconomicos): ?>
                                             <td>$ <?php echo number_format((float) $viajes[$i]['costo'], 2, ',', '.'); ?></td>
                                             <?php
+                                            // Calculamos el monto que corresponde al chofer aplicando el porcentaje.
                                             $MontoChofer = ((float) $viajes[$i]['costo'] * (int) $viajes[$i]['porcentaje_chofer']) / 100;
                                             ?>
                                             <td>
@@ -151,6 +152,6 @@ require_once 'includes/sidebar.php';
     </section>
 </main>
 <?php
-// Incluimos el pie de página con scripts y cierre del layout
+// Incluimos el pie de página con scripts y cierre del layout.
 require_once 'includes/footer.php';
 ?>

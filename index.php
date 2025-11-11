@@ -1,31 +1,31 @@
 <?php
-// Iniciamos o retomamos la sesión para acceder a los datos del usuario conectado
+// Iniciamos o retomamos la sesión para acceder a los datos del usuario conectado.
 session_start();
 
-// Incluimos el archivo que prepara la conexión a la base de datos
+// Incluimos el archivo que prepara la conexión a la base de datos.
 require_once 'funciones/conexion.php';
-// Incluimos las funciones comunes que se utilizan en todo el sistema
+// Incluimos las funciones comunes que se utilizan en todo el sistema.
 require_once 'funciones/funciones.php';
 
-// Validamos que exista un usuario logueado; de lo contrario, no se permite el acceso al panel
+// Validamos que exista un usuario logueado; de lo contrario, no se permite el acceso al panel.
 if (empty($_SESSION['Usuario_ID'])) {
-    // Enviamos al usuario a la pantalla de inicio de sesión
+    // Enviamos al usuario a la pantalla de inicio de sesión.
     header('Location: login.php');
-    // Terminamos el script porque el usuario no está autenticado
+    // Terminamos el script porque el usuario no está autenticado.
     exit;
 }
 
-// Definimos el título que se mostrará en la pestaña y cabecera
+// Definimos el título que se mostrará en la pestaña y cabecera.
 $pageTitle = 'Panel de Administración';
-// Indicamos que la sección activa del menú es el dashboard
+// Indicamos que la sección activa del menú es el dashboard para resaltar la opción.
 $activePage = 'dashboard';
 
-// Recuperamos el apellido del usuario si está disponible en la sesión
+// Recuperamos el apellido del usuario si está disponible en la sesión.
 $apellidoUsuario = !empty($_SESSION['Usuario_Apellido']) ? $_SESSION['Usuario_Apellido'] : '';
-// Recuperamos el nombre del usuario almacenado en la sesión
+// Recuperamos el nombre del usuario almacenado en la sesión.
 $nombreUsuario = !empty($_SESSION['Usuario_Nombre']) ? $_SESSION['Usuario_Nombre'] : '';
 
-// Construimos el nombre completo concatenando apellido y nombre según estén disponibles
+// Construimos el nombre completo concatenando apellido y nombre según estén disponibles.
 if ($apellidoUsuario !== '' && $nombreUsuario !== '') {
     $nombreCompleto = $apellidoUsuario . ', ' . $nombreUsuario;
 } elseif ($apellidoUsuario !== '') {
@@ -36,34 +36,34 @@ if ($apellidoUsuario !== '' && $nombreUsuario !== '') {
     $nombreCompleto = 'Usuario';
 }
 
-// Guardamos el nivel del usuario para personalizar el mensaje
+// Guardamos el nivel del usuario para personalizar el mensaje de bienvenida.
 $nivelActual = !empty($_SESSION['Usuario_Nivel']) ? (int) $_SESSION['Usuario_Nivel'] : 0;
-// También obtenemos la descripción textual del nivel para mostrarla
+// También obtenemos la descripción textual del nivel para mostrarla.
 $denominacionNivel = !empty($_SESSION['Usuario_NombreNivel']) ? $_SESSION['Usuario_NombreNivel'] : 'Usuario';
 
-// Definimos un texto inicial con las funcionalidades disponibles
+// Definimos un texto inicial con las funcionalidades disponibles.
 $funcionesPermitidas = 'la información disponible en el panel';
-// Según el nivel del usuario personalizamos la lista de tareas habilitadas
+// Según el nivel del usuario personalizamos la lista de tareas habilitadas.
 switch ($nivelActual) {
     case 1:
-        // Nivel 1 (por ejemplo administrador) puede gestionar todo
+        // Nivel 1 (por ejemplo administrador) puede gestionar todos los recursos del sistema.
         $funcionesPermitidas = 'transportes, choferes y viajes';
         break;
     case 2:
-        // Nivel 2 puede manejar transportes y viajes
+        // Nivel 2 puede manejar transportes y viajes.
         $funcionesPermitidas = 'transportes y viajes';
         break;
     case 3:
-        // Nivel 3 tiene acceso limitado al seguimiento de viajes asignados
+        // Nivel 3 tiene acceso limitado al seguimiento de viajes asignados.
         $funcionesPermitidas = 'el seguimiento de los viajes asignados';
         break;
 }
 
-// Incorporamos la cabecera común del sitio
+// Incorporamos la cabecera común del sitio.
 require_once 'includes/header.php';
-// Incorporamos la barra superior con accesos rápidos
+// Incorporamos la barra superior con accesos rápidos.
 require_once 'includes/topbar.php';
-// Incorporamos el menú lateral de navegación
+// Incorporamos el menú lateral de navegación.
 require_once 'includes/sidebar.php';
 ?>
 <!-- Área principal del contenido -->
@@ -104,6 +104,6 @@ require_once 'includes/sidebar.php';
     </section>
 </main>
 <?php
-// Incluimos el pie de página con los scripts compartidos
+// Incluimos el pie de página con los scripts compartidos.
 require_once 'includes/footer.php';
 ?>

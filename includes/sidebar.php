@@ -1,15 +1,18 @@
 <?php
-// En las clases la profe utilizaba variables simples para controlar la navegación
+// Inicializamos la variable que guarda la página activa para marcar la navegación.
 $paginaActual = '';
 if (!empty($activePage)) {
+    // Si el controlador define una página activa la guardamos en esta variable.
     $paginaActual = $activePage;
 }
 
+// Guardamos el nivel del usuario autenticado para decidir qué opciones mostrar.
 $nivelSesion = 0;
 if (!empty($_SESSION['Usuario_Nivel'])) {
     $nivelSesion = $_SESSION['Usuario_Nivel'];
 }
 
+// Determinamos si el usuario es administrador (nivel 1) para habilitar secciones exclusivas.
 $esAdministrador = false;
 if ($nivelSesion == 1) {
     $esAdministrador = true;
