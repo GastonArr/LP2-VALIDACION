@@ -15,8 +15,8 @@ if (empty($_SESSION['Usuario_ID'])) {
     exit;
 }
 
-// Solo permitimos que el nivel 1 (administrador) pueda registrar transportes como se mostró en clase.
-if (empty($_SESSION['Usuario_Nivel']) || (int) $_SESSION['Usuario_Nivel'] > 1) {
+// Solo bloqueamos a los perfiles que superan al operador (nivel 2) para que administradores y operadores puedan cargar transportes.
+if (empty($_SESSION['Usuario_Nivel']) || (int) $_SESSION['Usuario_Nivel'] > 2) {
     // Si no tiene el nivel requerido lo enviamos al panel principal.
     header('Location: index.php');
     // Terminamos el script para evitar accesos indebidos.

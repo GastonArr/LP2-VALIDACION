@@ -15,8 +15,8 @@ if (empty($_SESSION['Usuario_ID'])) {
     exit;
 }
 
-// Igual que en la carpeta de ejemplos, solo el administrador (nivel 1) carga registros desde el panel.
-if (empty($_SESSION['Usuario_Nivel']) || (int) $_SESSION['Usuario_Nivel'] > 1) {
+// Bloqueamos a quienes tengan un nivel superior al operador (nivel 2) para permitir la carga a administradores y operadores.
+if (empty($_SESSION['Usuario_Nivel']) || (int) $_SESSION['Usuario_Nivel'] > 2) {
     // Redirigimos al listado de viajes para quienes no tienen permiso de carga.
     header('Location: viajes_listado.php');
     // Detenemos la ejecución para evitar que puedan cargar viajes.
