@@ -1,6 +1,8 @@
 <?php
-if (!isset($pageTitle)) {
-    $pageTitle = 'Panel de Administración';
+if (!empty($pageTitle)) {
+    $tituloPagina = $pageTitle;
+} else {
+    $tituloPagina = 'Panel de Administración';
 }
 ?>
 <!DOCTYPE html>
@@ -10,7 +12,7 @@ if (!isset($pageTitle)) {
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-    <title><?php echo $pageTitle; ?></title>
+    <title><?php echo $tituloPagina; ?></title>
     <meta content="" name="description">
     <meta content="" name="keywords">
 

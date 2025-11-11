@@ -21,7 +21,10 @@ $pageTitle = 'Panel de Administración';
 $activePage = 'dashboard';
 
 // Recuperamos el apellido del usuario si está disponible en la sesión
-$apellidoUsuario = !empty($_SESSION['Usuario_Apellido']) ? $_SESSION['Usuario_Apellido'] : '';
+$apellidoUsuario = '';
+if (!empty($_SESSION['Usuario_Apellido'])) {
+    $apellidoUsuario = $_SESSION['Usuario_Apellido'];
+}
 // Recuperamos el nombre del usuario almacenado en la sesión
 $nombreUsuario = !empty($_SESSION['Usuario_Nombre']) ? $_SESSION['Usuario_Nombre'] : '';
 

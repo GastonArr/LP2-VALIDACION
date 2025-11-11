@@ -23,19 +23,35 @@ $pageTitle = 'Listado de viajes registrados';
 // Indicamos qué opción del menú lateral debe mostrarse activa
 $activePage = 'viajes_listado';
 
-// Determinamos el nivel de acceso del usuario logueado para replicar las comparaciones vistas en clase
-$nivelActual = !empty($_SESSION['Usuario_Nivel']) ? (int) $_SESSION['Usuario_Nivel'] : 0;
+// Determinamos el nivel de acceso del usuario logueado como se vio en clase
+$nivelActual = 0;
+if (!empty($_SESSION['Usuario_Nivel'])) {
+    $nivelActual = (int) $_SESSION['Usuario_Nivel'];
+}
+
 // En el ejemplo de la profe los choferes (nivel 3) solo veían su información, aplicamos ese filtro
 $choferFiltradoId = null;
-if ($nivelActual === 3 && !empty($_SESSION['Usuario_ID'])) {
-    $choferFiltradoId = (int) $_SESSION['Usuario_ID'];
+if ($nivelActual === 3) {
+    if (!empty($_SESSION['Usuario_ID'])) {
+        $choferFiltradoId = (int) $_SESSION['Usuario_ID'];
+    }
 }
 
 // Recuperamos los viajes desde la base de datos aplicando el filtro si corresponde
+$viajes = array();
 $viajes = Listar_Viajes($MiConexion, $choferFiltradoId);
+$CantidadViajes = count($viajes);
 
 // Solo el administrador (nivel 1) ve los importes completos, igual que en el panel de ejemplo
-$mostrarDatosEconomicos = ($nivelActual === 1);
+$mostrarDatosEconomicos = false;
+if ($nivelActual === 1) {
+    $mostrarDatosEconomicos = true;
+}
+
+$CantidadColumnas = 5;
+if ($mostrarDatosEconomicos) {
+    $CantidadColumnas = 7;
+}
 
 // Cargamos la cabecera del sitio con estilos y scripts necesarios
 require_once 'includes/header.php';
@@ -89,25 +105,21 @@ require_once 'includes/sidebar.php';
                                 <!-- Columna con el nombre del chofer -->
                                 <th>Chofer</th>
                                 <!-- Columnas económicas visibles solo para el administrador -->
-                                <?php if ($mostrarDatosEconomicos): ?>
+                                <?php if ($mostrarDatosEconomicos) { ?>
                                     <th>Costo viaje</th>
                                     <th>Monto Chofer</th>
-                                <?php endif; ?>
+                                <?php } ?>
                             </tr>
                         </thead>
                         <!-- Cuerpo de la tabla donde se listan los viajes -->
                         <tbody>
                             <!-- Si no hay registros mostramos un mensaje -->
-                            <?php if (!$viajes): ?>
+                            <?php if ($CantidadViajes == 0) { ?>
                                 <tr>
-                                    <td colspan="<?php echo 5 + ($mostrarDatosEconomicos ? 2 : 0); ?>" class="text-center">No hay viajes registrados.</td>
+                                    <td colspan="<?php echo $CantidadColumnas; ?>" class="text-center">No hay viajes registrados.</td>
                                 </tr>
-                            <?php else: ?>
-                                <?php
-                                // Calculamos la cantidad total de viajes recuperados
-                                $CantidadViajes = count($viajes);
-                                // Recorremos cada viaje para mostrarlo en una fila
-                                for ($i = 0; $i < $CantidadViajes; $i++) {
+                            <?php } else { ?>
+                                <?php for ($i = 0; $i < $CantidadViajes; $i++) {
                                     // Inicializamos la fecha formateada como cadena vacía
                                     $FechaFormateada = '';
                                     // Si hay una fecha programada válida intentamos formatearla
@@ -130,19 +142,19 @@ require_once 'includes/sidebar.php';
                                         <!-- Nombre completo del chofer -->
                                         <td><?php echo $viajes[$i]['chofer_apellido'] . ', ' . $viajes[$i]['chofer_nombre']; ?></td>
                                         <!-- Costos y porcentaje solo para el administrador -->
-                                        <?php if ($mostrarDatosEconomicos): ?>
-                                            <td>$ <?php echo number_format((float) $viajes[$i]['costo'], 2, ',', '.'); ?></td>
-                                            <?php
+                                        <?php if ($mostrarDatosEconomicos) {
+                                            $MontoChofer = 0;
                                             $MontoChofer = ((float) $viajes[$i]['costo'] * (int) $viajes[$i]['porcentaje_chofer']) / 100;
                                             ?>
+                                            <td>$ <?php echo number_format((float) $viajes[$i]['costo'], 2, ',', '.'); ?></td>
                                             <td>
                                                 $ <?php echo number_format($MontoChofer, 2, ',', '.'); ?>
                                                 (<?php echo (int) $viajes[$i]['porcentaje_chofer']; ?>%)
                                             </td>
-                                        <?php endif; ?>
+                                        <?php } ?>
                                     </tr>
                                 <?php } ?>
-                            <?php endif; ?>
+                            <?php } ?>
                         </tbody>
                     </table>
                 </div>

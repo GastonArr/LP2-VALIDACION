@@ -7,7 +7,10 @@ if (!empty($_SESSION['Usuario_Img'])) {
 }
 
 // Recuperamos el apellido del usuario autenticado
-$apellidoSesion = !empty($_SESSION['Usuario_Apellido']) ? $_SESSION['Usuario_Apellido'] : '';
+$apellidoSesion = '';
+if (!empty($_SESSION['Usuario_Apellido'])) {
+    $apellidoSesion = $_SESSION['Usuario_Apellido'];
+}
 // Recuperamos el nombre del usuario autenticado
 $nombreSesion = !empty($_SESSION['Usuario_Nombre']) ? $_SESSION['Usuario_Nombre'] : '';
 
