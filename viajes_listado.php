@@ -42,16 +42,14 @@ $viajes = array();
 $viajes = Listar_Viajes($MiConexion, $choferFiltradoId);
 $CantidadViajes = count($viajes);
 
-// Solo el administrador (nivel 1) ve los importes completos, igual que en el panel de ejemplo
-$mostrarDatosEconomicos = false;
-if ($nivelActual === 1) {
-    $mostrarDatosEconomicos = true;
-}
+// Determinamos qué columnas mostrar según el nivel del usuario
+$mostrarCostoViaje = in_array($nivelActual, [1, 2], true);
+$mostrarColumnaMontoChofer = in_array($nivelActual, [1, 3], true);
+$mostrarPorcentajeChofer = ($nivelActual === 1);
 
-$CantidadColumnas = 5;
-if ($mostrarDatosEconomicos) {
-    $CantidadColumnas = 7;
-}
+$CantidadColumnas = 5
+    + ($mostrarCostoViaje ? 1 : 0)
+    + ($mostrarColumnaMontoChofer ? 1 : 0);
 
 // Cargamos la cabecera del sitio con estilos y scripts necesarios.
 require_once 'includes/header.php';
@@ -104,9 +102,11 @@ require_once 'includes/sidebar.php';
                                 <th>Camión</th>
                                 <!-- Columna con el nombre del chofer -->
                                 <th>Chofer</th>
-                                <!-- Columnas económicas visibles solo para el administrador -->
-                                <?php if ($mostrarDatosEconomicos) { ?>
+                                <!-- Columnas económicas según nivel -->
+                                <?php if ($mostrarCostoViaje) { ?>
                                     <th>Costo viaje</th>
+                                <?php } ?>
+                                <?php if ($mostrarColumnaMontoChofer) { ?>
                                     <th>Monto Chofer</th>
                                 <?php } ?>
                             </tr>
@@ -141,15 +141,20 @@ require_once 'includes/sidebar.php';
                                         <td><?php echo $viajes[$i]['marca'] . ' - ' . $viajes[$i]['modelo'] . ' - ' . $viajes[$i]['patente']; ?></td>
                                         <!-- Nombre completo del chofer -->
                                         <td><?php echo $viajes[$i]['chofer_apellido'] . ', ' . $viajes[$i]['chofer_nombre']; ?></td>
-                                        <!-- Costos y porcentaje solo para el administrador -->
-                                        <?php if ($mostrarDatosEconomicos) {
-                                            $MontoChofer = 0;
-                                            $MontoChofer = ((float) $viajes[$i]['costo'] * (int) $viajes[$i]['porcentaje_chofer']) / 100;
+                                        <!-- Costos y porcentaje según nivel -->
+                                        <?php
+                                        $MontoChofer = ((float) $viajes[$i]['costo'] * (int) $viajes[$i]['porcentaje_chofer']) / 100;
+                                        if ($mostrarCostoViaje) {
                                             ?>
                                             <td>$ <?php echo number_format((float) $viajes[$i]['costo'], 2, ',', '.'); ?></td>
+                                        <?php }
+                                        if ($mostrarColumnaMontoChofer) {
+                                            ?>
                                             <td>
                                                 $ <?php echo number_format($MontoChofer, 2, ',', '.'); ?>
-                                                (<?php echo (int) $viajes[$i]['porcentaje_chofer']; ?>%)
+                                                <?php if ($mostrarPorcentajeChofer) { ?>
+                                                    (<?php echo (int) $viajes[$i]['porcentaje_chofer']; ?>%)
+                                                <?php } ?>
                                             </td>
                                         <?php } ?>
                                     </tr>
