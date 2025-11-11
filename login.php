@@ -1,42 +1,42 @@
 <?php
-// Iniciamos la sesión para poder gestionar datos de autenticación
+// Iniciamos la sesión para poder gestionar datos de autenticación.
 session_start();
 
-// Incluimos el archivo encargado de generar la conexión a la base de datos
+// Incluimos el archivo encargado de generar la conexión a la base de datos.
 require_once 'funciones/conexion.php';
-// Incluimos las funciones reutilizables que encapsulan reglas de negocio
+// Incluimos las funciones reutilizables que encapsulan reglas de negocio.
 require_once 'funciones/funciones.php';
 
-// Si el usuario ya tiene una sesión activa lo redirigimos directamente al panel principal
+// Si el usuario ya tiene una sesión activa lo redirigimos directamente al panel principal.
 if (!empty($_SESSION['Usuario_ID'])) {
-    // Usamos la función de ayuda para redirigir al dashboard
+    // Usamos la función de ayuda para redirigir al dashboard.
     Redireccionar('index.php');
 }
 
-// Abrimos la conexión a la base de datos para validar las credenciales
+// Abrimos la conexión a la base de datos para validar las credenciales.
 $MiConexion = ConexionBD();
 
-// Establecemos el título de la página de login
+// Establecemos el título de la página de login.
 $pageTitle = 'Panel de Administración - Login';
-// Variable que almacenará mensajes informativos o de error
+// Variable que almacenará mensajes informativos o de error para mostrar en la vista.
 $Mensaje = '';
 
-// Verificamos si se envió el formulario de ingreso
+// Verificamos si se envió el formulario de ingreso observando el botón submit.
 if (!empty($_POST['BotonLogin'])) {
-    // Si faltan datos mostramos un mensaje de aviso
+    // Si faltan datos obligatorios mostramos un mensaje de aviso.
     if (empty($_POST['usuario']) || empty($_POST['clave'])) {
         $Mensaje = 'Debes ingresar el usuario y la clave.';
     } else {
-        // Consultamos en la base de datos si las credenciales son válidas
+        // Consultamos en la base de datos si las credenciales son válidas.
         $UsuarioLogueado = DatosLogin($_POST['usuario'], $_POST['clave'], $MiConexion);
 
-        // Si encontramos un registro procesamos el acceso
+        // Si encontramos un registro procesamos el acceso.
         if (!empty($UsuarioLogueado)) {
-            // TODO ESTE CHEQUEO REVISA EL ESTADO ACTIVO: SI LA BANDERA ES CERO SE IMPIDE EL ACCESO AUNQUE LAS CREDENCIALES SEAN VALIDAS
+            // Este chequeo revisa el estado activo: si la bandera es cero se impide el acceso aunque las credenciales sean válidas.
             if ($UsuarioLogueado['ACTIVO'] == 0) {
                 $Mensaje = 'Ud. no se encuentra activo en el sistema.';
             } else {
-                // Guardamos todos los datos relevantes en la sesión para reutilizarlos
+                // Guardamos todos los datos relevantes en la sesión para reutilizarlos en las distintas páginas protegidas.
                 $_SESSION['Usuario_ID'] = $UsuarioLogueado['ID'];
                 $_SESSION['Usuario_Nombre'] = $UsuarioLogueado['NOMBRE'];
                 $_SESSION['Usuario_Apellido'] = $UsuarioLogueado['APELLIDO'];
@@ -47,17 +47,17 @@ if (!empty($_POST['BotonLogin'])) {
                 $_SESSION['Usuario_Saludo'] = $UsuarioLogueado['SALUDO'];
                 $_SESSION['Usuario_Activo'] = $UsuarioLogueado['ACTIVO'];
 
-                // Redirigimos al usuario al panel una vez autenticado
+                // Redirigimos al usuario al panel una vez autenticado.
                 Redireccionar('index.php');
             }
         } else {
-            // Si las credenciales no son válidas informamos el error
+            // Si las credenciales no son válidas informamos el error.
             $Mensaje = 'Datos incorrectos, ingresa nuevamente.';
         }
     }
 }
 
-// Incluimos la cabecera HTML común del proyecto
+// Incluimos la cabecera HTML común del proyecto.
 require_once 'includes/header.php';
 ?>
 <!-- Contenido principal del formulario de acceso -->
@@ -149,6 +149,6 @@ require_once 'includes/header.php';
     </div>
 </main>
 <?php
-// Cargamos el pie de página que incluye los scripts y cierre del HTML
+// Cargamos el pie de página que incluye los scripts y cierre del HTML.
 require_once 'includes/footer.php';
 ?>

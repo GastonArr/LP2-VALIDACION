@@ -1,17 +1,17 @@
 <?php
-// Definimos la imagen de perfil por defecto
+// Definimos la imagen de perfil por defecto que usa el layout cuando no hay foto personalizada.
 $imagenPerfil = 'profile-img.jpg';
-// Si en la sesión hay una imagen personalizada la utilizamos
+// Si en la sesión hay una imagen personalizada la utilizamos para que el usuario se reconozca fácilmente.
 if (!empty($_SESSION['Usuario_Img'])) {
     $imagenPerfil = $_SESSION['Usuario_Img'];
 }
 
-// Recuperamos el apellido del usuario autenticado
+// Recuperamos el apellido del usuario autenticado para mostrarlo en el menú superior.
 $apellidoSesion = !empty($_SESSION['Usuario_Apellido']) ? $_SESSION['Usuario_Apellido'] : '';
-// Recuperamos el nombre del usuario autenticado
+// Recuperamos el nombre del usuario autenticado.
 $nombreSesion = !empty($_SESSION['Usuario_Nombre']) ? $_SESSION['Usuario_Nombre'] : '';
 
-// Construimos el nombre completo mezclando apellido y nombre según estén cargados
+// Construimos el nombre completo mezclando apellido y nombre según estén cargados.
 if ($apellidoSesion !== '' && $nombreSesion !== '') {
     $nombreCompletoSesion = $apellidoSesion . ', ' . $nombreSesion;
 } elseif ($apellidoSesion !== '') {
@@ -22,7 +22,7 @@ if ($apellidoSesion !== '' && $nombreSesion !== '') {
     $nombreCompletoSesion = 'Usuario';
 }
 
-// Obtenemos la denominación del nivel del usuario para mostrarlo en el menú
+// Obtenemos la denominación del nivel del usuario para mostrarlo en el menú desplegable.
 $nivelNombreSesion = !empty($_SESSION['Usuario_NombreNivel']) ? $_SESSION['Usuario_NombreNivel'] : 'Usuario';
 ?>
 <!-- Barra superior fija con accesos rápidos y perfil del usuario -->
